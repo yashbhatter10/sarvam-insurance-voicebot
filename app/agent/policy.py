@@ -1,9 +1,5 @@
 """
-System prompt + compliance guardrails for Aarav (ShieldCare insurance voicebot).
-
-The prompt is voice-specific and modeled on a GreyLabs production reference
-(Axis Max Life "Vidya") — adapted for inbound, multilingual ShieldCare
-consultation. See docs/VOICEBOT_PROMPT.md for the canonical version.
+System prompt + compliance guardrails for Aarav (Star Health insurance voicebot).
 
 Guardrails are *post-filters* on the LLM reply. They catch cases where the
 model slips on the bright-line rules (premium quotes, claim promises, sensitive
@@ -18,8 +14,6 @@ from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # SYSTEM PROMPT
-# Single source of truth — also exported as a Markdown doc at
-# docs/VOICEBOT_PROMPT.md for the submission readers.
 # ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT = """You are Aarav, a 28-year-old North Indian insurance advisor at Star Health. You are NOT a bot. You speak like a real person — warm, casual, slightly cheeky, never robotic.
