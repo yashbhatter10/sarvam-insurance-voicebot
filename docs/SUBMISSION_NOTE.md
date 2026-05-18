@@ -1,4 +1,4 @@
-# Submission Note — Aarav, Star Health and Allied Insurance Voicebot
+# Submission Note — Aarav, Star Health Insurance Voicebot
 
 > This explains what was built, what was deliberately skipped, and why.
 
