@@ -21,8 +21,7 @@ from typing import Iterable, Optional
 logger = logging.getLogger("sarvam_client")
 
 # Strip reasoning-model thinking blocks like <think>...</think> before TTS.
-# Sarvam-M is a reasoning model that emits these. Sarvam-30B is not, but we keep
-# the stripper as a safety net.
+# Kept as a safety net in case the LLM emits reasoning traces.
 _THINK_BLOCK_CLOSED = re.compile(r"<think>.*?</think>\s*", re.DOTALL | re.IGNORECASE)
 _THINK_OPEN_UNCLOSED = re.compile(r"<think>.*$", re.DOTALL | re.IGNORECASE)
 _STRAY_TAGS = re.compile(r"</?think>", re.IGNORECASE)
@@ -276,9 +275,9 @@ class SarvamClient:
         # Rotate so repeated failures don't sound robotic.
         import random
         _RECOVERY_PHRASES = [
-            "Anand ji, aapki awaaz thodi unclear aayi — ek baar phir bataenge?",
+            "Aapki awaaz thodi unclear aayi — ek baar phir bataenge?",
             "Maafi chahta hoon, connection mein kuch issue tha — phir se bolenge?",
-            "Haan Anand ji, dobara bataiye — main sun raha hoon.",
+            "Haan, dobara bataiye — main sun raha hoon.",
             "Theek hai, ek baar phir poochhta hoon — aap family floater prefer karenge ya alag-alag plan?",
         ]
         return random.choice(_RECOVERY_PHRASES)
