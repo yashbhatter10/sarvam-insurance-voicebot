@@ -2,9 +2,9 @@
 RAG over the insurance brochure.
 
 Lightweight, dependency-free retrieval — uses character-overlap scoring plus
-keyword bonuses. This is intentional: for a 1-page brochure split into ~30
-snippets, a simple BM25-ish scorer is faster, deterministic, and easier to
-explain to an interviewer than spinning up sentence-transformers / FAISS.
+keyword bonuses. This is intentional: for a brochure split into ~203 snippets
+across 17 sections, a simple BM25-ish scorer is faster, deterministic, and
+easier to audit than spinning up sentence-transformers / FAISS.
 
 In production we'd swap this for sarvam-embed (when available) or a small
 sentence-transformers index.
@@ -123,7 +123,7 @@ class BrochureRAG:
         raw = self.brochure_path.read_text(encoding="utf-8")
         self.snippets = _split_into_snippets(raw)
 
-    def retrieve(self, query: str, k: int = 3, min_score: float = 4.0) -> list[Snippet]:
+    def retrieve(self, query: str, k: int = 3, min_score: float = 1.5) -> list[Snippet]:
         """Retrieve the top-k snippets most relevant to the query.
 
         min_score acts as a relevance gate: snippets scoring below it are
@@ -131,12 +131,12 @@ class BrochureRAG:
         (e.g. "car insurance", "motor vehicle") from returning irrelevant
         snippets that could mislead the LLM.
 
-        Threshold of 4.0 was calibrated so that:
-          - Genuine health-insurance queries always exceed it (scores 4–12+)
-          - Pure out-of-scope queries (car, motor vehicle) fall well below it
+        Threshold of 1.5 is calibrated for short voice queries (3–6 words):
+          - Genuine health-insurance queries typically score 1.5–8+
+          - Pure out-of-scope queries (car, motor vehicle) score near 0
           - Borderline queries like "term life insurance" may return a tangentially
-            related snippet (e.g. accidental death rider); the LLM system-prompt
-            guardrail handles these by restricting claims to retrieved snippets.
+            related snippet; the LLM system-prompt guardrail restricts claims to
+            retrieved snippets only.
         """
         if not self.snippets:
             return []
