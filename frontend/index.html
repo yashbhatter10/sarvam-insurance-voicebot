@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aarav · Sarvam Insurance Voicebot</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #151b24;
+    --panel-2: #1a2230;
+    --text: #e6edf3;
+    --muted: #8b95a6;
+    --accent: #7c5cff;
+    --accent-2: #00d4aa;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+    --border: #232b3a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { display: grid; grid-template-columns: 1fr 1fr 340px; gap: 16px; padding: 16px; min-height: 100vh; }
+  @media (max-width: 1100px) { .wrap { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; overflow: hidden; }
+  h1 { font-size: 17px; margin: 0 0 4px; font-weight: 600; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.ghost:hover:not(:disabled) { border-color: var(--muted); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
+  select, input[type="text"] {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    min-height: 42px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .status-bar.listening  { background: rgba(0,212,170,0.08); border-color: rgba(0,212,170,0.3); color: var(--accent-2); }
+  .status-bar.speaking   { background: rgba(124,92,255,0.08); border-color: rgba(124,92,255,0.3); color: var(--accent); }
+  .status-bar.processing { background: rgba(255,180,84,0.08); border-color: rgba(255,180,84,0.3); color: var(--warn); }
+  .status-bar.paused     { background: var(--panel-2); border-color: var(--border); color: var(--muted); }
+  .status-bar.idle       { background: var(--panel-2); border-color: var(--border); color: var(--muted); }
+
+  /* Mic orb — visual VAD indicator */
+  .mic-orb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .mic-orb.active  { background: var(--accent-2); animation: orb-pulse 0.8s ease-in-out infinite alternate; }
+  .mic-orb.loud    { background: var(--accent-2); transform: scale(1.35); }
+  .mic-orb.bot     { background: var(--accent); animation: orb-pulse 1.2s ease-in-out infinite alternate; }
+  .mic-orb.spin    { background: var(--warn); animation: orb-spin 1s linear infinite; }
+  @keyframes orb-pulse { from { opacity: 0.5; } to { opacity: 1; } }
+  @keyframes orb-spin  { from { transform: scale(1);   opacity: 0.6; }
+                         50%  { transform: scale(1.2); opacity: 1; }
+                         to   { transform: scale(1);   opacity: 0.6; } }
+
+  /* Volume bar */
+  .vol-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .vol-fill { height: 100%; background: var(--accent-2); border-radius: 2px; width: 0%; transition: width 0.05s; }
+
+  /* Transcript */
+  .transcript { display: flex; flex-direction: column; gap: 10px; max-height: calc(100vh - 300px); overflow-y: auto; padding-right: 6px; }
+  .bubble { padding: 10px 13px; border-radius: 12px; max-width: 88%; line-height: 1.5; font-size: 14px; }
+  .bubble.user { background: var(--panel-2); align-self: flex-end; border: 1px solid var(--border); }
+  .bubble.bot  { background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(0,212,170,0.08)); align-self: flex-start; border: 1px solid rgba(124,92,255,0.25); }
+
+  /* Source cards */
+  .source-card { background: var(--panel-2); border-left: 3px solid var(--accent-2); padding: 9px 11px; border-radius: 6px; font-size: 12px; margin-bottom: 6px; line-height: 1.4; }
+  .source-card .section-label { color: var(--accent-2); font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; margin-bottom: 3px; }
+
+  /* Metric grid */
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .metric .label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+  .metric .value { font-size: 20px; font-weight: 700; margin-top: 3px; }
+  .metric .unit  { color: var(--muted); font-size: 12px; margin-left: 3px; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge.green  { background: rgba(0,212,170,0.15); color: var(--accent-2); }
+  .badge.warn   { background: rgba(255,180,84,0.15); color: var(--warn); }
+  .badge.danger { background: rgba(255,107,107,0.15); color: var(--danger); }
+
+  /* Latency bar */
+  .latency-bar { display: flex; height: 7px; border-radius: 4px; overflow: hidden; background: var(--panel-2); margin: 8px 0 6px; }
+  .latency-bar div { height: 100%; }
+  .latency-legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  .latency-legend span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .latency-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Guardrail / escalation items */
+  .guardrail-item  { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); border-radius: 6px; padding: 7px 10px; font-size: 12px; margin-bottom: 5px; color: var(--danger); }
+  .escalation-item { background: rgba(255,180,84,0.08); border: 1px solid rgba(255,180,84,0.2);   border-radius: 6px; padding: 6px 10px; font-size: 12px; margin-bottom: 4px; color: var(--warn); }
+
+  .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-2); display: inline-block; animation: dot-pulse 1.5s infinite; }
+  @keyframes dot-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(0,212,170,0.7); } 70% { box-shadow: 0 0 0 8px rgba(0,212,170,0); } }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  details { margin-top: 16px; }
+  details summary { cursor: pointer; font-size: 11px; color: var(--muted); user-select: none; }
+  details summary:hover { color: var(--text); }
+  pre { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted); margin: 8px 0 0; white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ LEFT: Conversation ══ -->
+  <div class="panel">
+    <div class="header-row">
+      <div>
+        <h1>Aarav · Star Health insurance advisor</h1>
+        <div class="sub">Sarvam Saaras v3 STT · Gemini 2.5 Flash · Bulbul v3 TTS</div>
+      </div>
+      <span id="mode-badge" class="badge warn">checking…</span>
+    </div>
+
+    <!-- Status bar: always-visible indicator of what's happening -->
+    <div id="status-bar" class="status-bar idle">
+      <div id="mic-orb" class="mic-orb"></div>
+      <div id="vol-bar" class="vol-bar"><div id="vol-fill" class="vol-fill"></div></div>
+      <span id="status-text">Start a conversation to begin</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="row">
+      <button id="btn-start">Start conversation</button>
+      <button id="btn-pause" class="ghost" disabled>Pause</button>
+      <button id="btn-reset" class="ghost">Reset</button>
+    </div>
+
+    <!-- Text fallback -->
+    <div class="row">
+      <input id="text-input" type="text" placeholder="Or type your message and press Enter…" style="flex:1; min-width:200px;" />
+      <button id="btn-send" class="ghost">Send</button>
+    </div>
+
+    <h2>Conversation</h2>
+    <div id="transcript" class="transcript"></div>
+  </div>
+
+  <!-- ══ MIDDLE: Last turn detail ══ -->
+  <div class="panel">
+    <h2>Policy sources used</h2>
+    <div id="sources"><div class="sub">Sources will appear here after each turn.</div></div>
+
+    <hr class="divider" />
+
+    <h2>Response time breakdown</h2>
+    <div id="latency-detail"><div class="sub">Timing will appear after the first turn.</div></div>
+
+    <hr class="divider" />
+
+    <h2>Safety guardrails</h2>
+    <div id="guardrails"><div class="sub" style="color:var(--accent-2);">✓ No rule violations this session.</div></div>
+
+    <details>
+      <summary>Developer: raw response payload</summary>
+      <pre id="raw"></pre>
+    </details>
+  </div>
+
+  <!-- ══ RIGHT: Session analytics ══ -->
+  <div class="panel">
+    <div class="header-row">
+      <div>
+        <h1>Session analytics</h1>
+        <div class="sub" style="margin-top:2px;">Live pilot view</div>
+      </div>
+      <span id="status-dot" class="pulse"></span>
+    </div>
+
+    <div class="metric-grid" style="margin-bottom:12px;">
+      <div class="metric">
+        <div class="label">Turns</div>
+        <div class="value" id="m-turns">0</div>
+      </div>
+      <div class="metric">
+        <div class="label">Conversation stage</div>
+        <div class="value" id="m-state" style="font-size:13px; margin-top:6px;">—</div>
+      </div>
+      <div class="metric">
+        <div class="label">Avg response</div>
+        <div class="value"><span id="m-p50">—</span><span class="unit">ms</span></div>
+      </div>
+      <div class="metric">
+        <div class="label">Slowest response</div>
+        <div class="value"><span id="m-p95">—</span><span class="unit">ms</span></div>
+      </div>
+      <div class="metric">
+        <div class="label">Policy coverage</div>
+        <div class="value"><span id="m-rag">—</span><span class="unit">%</span></div>
+      </div>
+      <div class="metric">
+        <div class="label">Languages detected</div>
+        <div class="value" id="m-langs" style="font-size:13px; margin-top:6px;">—</div>
+      </div>
+    </div>
+
+    <h2>Routed to advisor for</h2>
+    <div id="m-escalations"><div class="sub">Nothing escalated yet.</div></div>
+  </div>
+
+</div>
+
+<script>
+// ─── Constants ───────────────────────────────────────────────────
+const SPEECH_THRESHOLD  = 0.018;  // RMS above this = someone is speaking
+const SILENCE_MS        = 1600;   // ms of silence before we send
+const MIN_SPEECH_MS     = 350;    // minimum speech duration to bother sending
+const VAD_INTERVAL_MS   = 40;     // how often we sample the mic (ms)
+
+const STATE_LABELS = {
+  greeting:  "Greeting",
+  discovery: "Learning about you",
+  pitch:     "Recommending a plan",
+  handoff:   "Connecting to advisor",
+  closing:   "Wrapping up",
+};
+
+const LANG_LABELS = { "en-IN": "English", "hi-IN": "Hindi", "ta-IN": "Tamil", "bn-IN": "Bengali", "mr-IN": "Marathi" };
+
+// ─── State ───────────────────────────────────────────────────────
+const SESSION_ID = "sess_" + Math.random().toString(36).slice(2, 10);
+let mode = "idle"; // idle | listening | processing | bot_speaking | paused
+let micStream      = null;
+let audioCtx       = null;
+let analyser       = null;
+let mediaRecorder  = null;
+let chunks         = [];
+let vadTimer       = null;      // setInterval handle
+let silenceStart   = null;      // timestamp when silence began
+let speechStart    = null;      // timestamp when speech began
+let currentAudio   = null;
+let isRecording    = false;
+
+const $ = id => document.getElementById(id);
+
+// ─── UI helpers ──────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  const bar  = $("status-bar");
+  const orb  = $("mic-orb");
+  const text = $("status-text");
+  bar.className = "status-bar " + m;
+  orb.className = "mic-orb";
+
+  if (m === "listening") {
+    orb.classList.add("active");
+    text.textContent = "Listening… speak now";
+    $("btn-pause").textContent = "Pause";
+  } else if (m === "processing") {
+    orb.classList.add("spin");
+    text.textContent = "Processing your message…";
+  } else if (m === "bot_speaking") {
+    orb.classList.add("bot");
+    text.textContent = "Aarav is speaking…";
+  } else if (m === "paused") {
+    text.textContent = "Paused — click Resume to continue";
+    $("btn-pause").textContent = "Resume";
+  } else {
+    text.textContent = "Start a conversation to begin";
+  }
+}
+
+function setVolume(rms) {
+  const pct = Math.min(100, rms / 0.15 * 100);
+  $("vol-fill").style.width = pct + "%";
+  // Make orb pulse louder when voice is detected
+  if (mode === "listening") {
+    const orb = $("mic-orb");
+    if (rms > SPEECH_THRESHOLD * 1.5) {
+      orb.className = "mic-orb loud";
+    } else {
+      orb.className = "mic-orb active";
+    }
+  }
+}
+
+function addBubble(role, text) {
+  const t = $("transcript");
+  const div = document.createElement("div");
+  div.className = "bubble " + role;
+  div.textContent = text || "…";
+  t.appendChild(div);
+  t.scrollTop = t.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+// ─── Mic / VAD setup ─────────────────────────────────────────────
+async function acquireMic() {
+  if (micStream) return true;
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 }
+    });
+    audioCtx = new AudioContext();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    audioCtx.createMediaStreamSource(micStream).connect(analyser);
+    return true;
+  } catch (e) {
+    alert("Microphone permission denied. Use the text input below instead.");
+    return false;
+  }
+}
+
+function getRMS() {
+  if (!analyser) return 0;
+  const buf = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteTimeDomainData(buf);
+  let sum = 0;
+  for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+  return Math.sqrt(sum / buf.length);
+}
+
+function pickMime() {
+  for (const c of ["audio/webm;codecs=opus","audio/ogg;codecs=opus","audio/webm","audio/wav"])
+    if (MediaRecorder.isTypeSupported(c)) return c;
+  return "";
+}
+
+// ─── VAD loop ────────────────────────────────────────────────────
+function startVAD() {
+  if (vadTimer) return;
+  silenceStart = null;
+  speechStart  = null;
+  vadTimer = setInterval(() => {
+    if (mode !== "listening") return;
+    const rms = getRMS();
+    setVolume(rms);
+    const now = Date.now();
+
+    if (rms > SPEECH_THRESHOLD) {
+      // Speech detected
+      if (!isRecording) startCapture();
+      silenceStart = null;
+      if (!speechStart) speechStart = now;
+    } else {
+      // Silence
+      if (isRecording) {
+        if (!silenceStart) silenceStart = now;
+        const silenceDuration = now - silenceStart;
+        const spokenDuration  = speechStart ? silenceStart - speechStart : 0;
+        if (silenceDuration >= SILENCE_MS && spokenDuration >= MIN_SPEECH_MS) {
+          stopCapture(); // send it
+        }
+      }
+    }
+  }, VAD_INTERVAL_MS);
+}
+
+function stopVAD() {
+  if (vadTimer) { clearInterval(vadTimer); vadTimer = null; }
+  $("vol-fill").style.width = "0%";
+}
+
+function startCapture() {
+  if (isRecording || !micStream) return;
+  chunks = [];
+  mediaRecorder = new MediaRecorder(micStream, { mimeType: pickMime() });
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = sendAudio;
+  mediaRecorder.start();
+  isRecording = true;
+}
+
+function stopCapture() {
+  if (!isRecording) return;
+  isRecording = false;
+  silenceStart = null;
+  speechStart  = null;
+  if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+}
+
+async function sendAudio() {
+  if (!chunks.length) { resumeListening(); return; }
+  setMode("processing");
+  stopVAD();
+  const blob = new Blob(chunks, { type: chunks[0]?.type || "audio/webm" });
+  const fd = new FormData();
+  fd.append("session_id", SESSION_ID);
+  fd.append("language_hint", "unknown");
+  fd.append("gender_pref", "male");
+  fd.append("audio", blob, "turn.webm");
+  try {
+    const r = await fetch("/api/turn", { method: "POST", body: fd });
+    handleResponse(await r.json());
+  } catch (e) {
+    console.error(e);
+    resumeListening();
+  }
+}
+
+// ─── Audio playback ───────────────────────────────────────────────
+async function playAudio(b64) {
+  if (!b64) { resumeListening(); return; }
+  setMode("bot_speaking");
+  stopVAD();
+  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const url = URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  currentAudio = new Audio(url);
+  currentAudio.onended = () => { URL.revokeObjectURL(url); resumeListening(); };
+  currentAudio.onerror = () => { URL.revokeObjectURL(url); resumeListening(); };
+  try { await currentAudio.play(); } catch (e) { resumeListening(); }
+}
+
+function resumeListening() {
+  if (mode === "paused" || mode === "idle") return;
+  setMode("listening");
+  startVAD();
+}
+
+// ─── API response handler ─────────────────────────────────────────
+function handleResponse(j) {
+  if (j.error) { console.error(j.error); resumeListening(); return; }
+  if (j.user_text) addBubble("user", j.user_text);
+  if (j.bot_text)  addBubble("bot",  j.bot_text);
+  renderSources(j.sources);
+  renderLatency(j.latency);
+  renderMetrics(j.metrics_so_far);
+  $("raw").textContent = JSON.stringify({ ...j, audio_b64: j.audio_b64 ? "<…base64…>" : "" }, null, 2);
+  if (j.audio_b64) {
+    playAudio(j.audio_b64);
+  } else {
+    resumeListening();
+  }
+}
+
+// ─── Render helpers ───────────────────────────────────────────────
+function renderSources(sources) {
+  const el = $("sources");
+  if (!sources || !sources.length) {
+    el.innerHTML = '<div class="sub">No policy snippets retrieved for this turn.</div>';
+    return;
+  }
+  el.innerHTML = sources.map(s => {
+    const preview = s.text.length > 160 ? s.text.slice(0, 160).trimEnd() + "…" : s.text;
+    return `<div class="source-card">
+      <div class="section-label">${escapeHtml(s.section)}</div>
+      ${escapeHtml(preview)}
+    </div>`;
+  }).join("");
+}
+
+function renderLatency(lat) {
+  if (!lat) return;
+  const total = Math.max(1, lat.total_ms);
+  const seg = (ms, color) =>
+    `<div style="flex:${ms/total}; background:${color}; min-width:${ms>0?2:0}px;"></div>`;
+  $("latency-detail").innerHTML = `
+    <div class="sub" style="margin-bottom:4px;">Total time to first audio: <b>${lat.total_ms.toLocaleString()} ms</b></div>
+    <div class="latency-bar">
+      ${seg(lat.stt_ms,      "#7c5cff")}
+      ${seg(lat.retrieval_ms,"#00d4aa")}
+      ${seg(lat.llm_ms,      "#ffb454")}
+      ${seg(lat.tts_ms,      "#ff6b6b")}
+    </div>
+    <div class="latency-legend">
+      <span><i style="background:#7c5cff;"></i>Speech-to-text ${lat.stt_ms} ms</span>
+      <span><i style="background:#00d4aa;"></i>Policy lookup ${lat.retrieval_ms} ms</span>
+      <span><i style="background:#ffb454;"></i>AI thinking ${lat.llm_ms} ms</span>
+      <span><i style="background:#ff6b6b;"></i>Voice synthesis ${lat.tts_ms} ms</span>
+    </div>`;
+}
+
+function renderMetrics(m) {
+  if (!m) return;
+  $("m-turns").textContent = m.turns;
+  const raw = m.current_state || "";
+  $("m-state").textContent = STATE_LABELS[raw] || (raw ? raw[0].toUpperCase() + raw.slice(1) : "—");
+  $("m-p50").textContent = m.latency_p50_ms ?? "—";
+  $("m-p95").textContent = m.latency_p95_ms ?? "—";
+  $("m-rag").textContent = m.rag_no_answer_rate != null
+    ? Math.round((1 - m.rag_no_answer_rate) * 100) : "—";
+  $("m-langs").textContent = (m.languages || []).map(l => LANG_LABELS[l] || l).join(", ") || "—";
+
+  const escEl = $("m-escalations");
+  escEl.innerHTML = (m.escalations && m.escalations.length)
+    ? m.escalations.map(e => `<div class="escalation-item">→ ${escapeHtml(e)}</div>`).join("")
+    : '<div class="sub">Nothing escalated yet.</div>';
+
+  const grEl = $("guardrails");
+  grEl.innerHTML = (m.guardrail_triggers && m.guardrail_triggers.length)
+    ? m.guardrail_triggers.map(g => `<div class="guardrail-item">⚠ ${escapeHtml(g.replace(/_/g," "))}</div>`).join("")
+    : '<div class="sub" style="color:var(--accent-2);">✓ No rule violations this session.</div>';
+}
+
+// ─── Button handlers ──────────────────────────────────────────────
+$("btn-start").onclick = async () => {
+  if (!await acquireMic()) return;
+  $("btn-start").disabled = true;
+  $("btn-pause").disabled = false;
+  setMode("processing");
+  const fd = new FormData();
+  fd.append("session_id", SESSION_ID);
+  fd.append("gender_pref", "male");
+  try {
+    const r = await fetch("/api/session/start", { method: "POST", body: fd });
+    handleResponse(await r.json());
+  } catch (e) { console.error(e); setMode("idle"); }
+};
+
+$("btn-pause").onclick = () => {
+  if (mode === "paused") {
+    // Resume — call setMode+startVAD directly because resumeListening()
+    // guards against mode==="paused" and would return early.
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    setMode("listening");
+    startVAD();
+  } else {
+    // Pause — stop everything mid-flight
+    stopVAD();
+    stopCapture();
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    setMode("paused");
+  }
+};
+
+$("btn-reset").onclick = async () => {
+  stopVAD();
+  stopCapture();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  if (audioCtx)  { audioCtx.close(); audioCtx = null; analyser = null; }
+  await fetch(`/api/session/${SESSION_ID}/reset`, { method: "POST" }).catch(() => {});
+  $("transcript").innerHTML = "";
+  $("sources").innerHTML    = '<div class="sub">Sources will appear here after each turn.</div>';
+  $("latency-detail").innerHTML = '<div class="sub">Timing will appear after the first turn.</div>';
+  $("raw").textContent = "";
+  $("btn-start").disabled = false;
+  $("btn-pause").disabled = true;
+  $("btn-pause").textContent = "Pause";
+  $("vol-fill").style.width = "0%";
+  setMode("idle");
+  renderMetrics({ turns:0, current_state:"", latency_p50_ms:null, latency_p95_ms:null,
+    rag_no_answer_rate:null, languages:[], escalations:[], guardrail_triggers:[] });
+};
+
+// Text fallback — still available
+$("btn-send").onclick = async () => {
+  const text = $("text-input").value.trim();
+  if (!text) return;
+  $("text-input").value = "";
+  stopVAD();
+  stopCapture();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  setMode("processing");
+  const fd = new FormData();
+  fd.append("session_id", SESSION_ID);
+  fd.append("language_hint", "unknown");
+  fd.append("gender_pref", "male");
+  fd.append("text", text);
+  try {
+    const r = await fetch("/api/turn", { method: "POST", body: fd });
+    handleResponse(await r.json());
+  } catch (e) { console.error(e); resumeListening(); }
+};
+
+$("text-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-send").click(); });
+
+// ─── Health check ─────────────────────────────────────────────────
+async function init() {
+  try {
+    const j = await (await fetch("/api/health")).json();
+    const badge = $("mode-badge");
+    if (j.mock_mode) {
+      badge.textContent = "Mock mode · UI demo";
+      badge.className = "badge warn";
+    } else {
+      badge.textContent = "Live · Sarvam APIs wired";
+      badge.className = "badge green";
+    }
+  } catch (e) {
+    $("mode-badge").textContent = "Backend unreachable";
+    $("mode-badge").className = "badge danger";
+  }
+}
+init();
+
+// ─── Auto-log session when tab is closed / page refreshed ─────────
+// sendBeacon fires reliably even during unload — unlike fetch() which
+// gets cancelled. The server only emails if the session has actual turns.
+window.addEventListener("beforeunload", () => {
+  navigator.sendBeacon(`/api/session/${SESSION_ID}/reset`);
+});
+</script>
+</body>
+</html>

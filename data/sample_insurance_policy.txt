@@ -1,0 +1,380 @@
+STAR HEALTH COMPREHENSIVE INSURANCE POLICY — PRODUCT KNOWLEDGE BASE
+=====================================================================
+Issued by Star Health and Allied Insurance Company Limited
+IRDAI Registration No. 129 | CIN: L66010TN2005PLC056649
+This document is used as the RAG knowledge base for the Aarav insurance voicebot demo.
+Sources: StarHealth.in, PolicyBazaar, InsuranceDekho, Coverfox (publicly available product details)
+Last compiled: May 2026
+
+----------------------------------------------------
+COMPANY OVERVIEW (use confidently in pitch)
+----------------------------------------------------
+Star Health and Allied Insurance Company Limited is India's largest standalone health insurer.
+
+- Claim settlement ratio: above 90 percent of all claims settled.
+- Cashless claim settlement: 90 percent of cashless claims settled within 2 hours.
+- Hospital network: over 14,000 hospitals across India with cashless facility.
+- Branches: over 850 offices across India for localised customer support.
+- Cashless Everywhere: cashless treatment available even at non-network hospitals with prior authorisation.
+- Regulated by IRDAI (Insurance Regulatory and Development Authority of India).
+
+----------------------------------------------------
+SECTION 1 — PRODUCT OVERVIEW
+----------------------------------------------------
+The Star Health Comprehensive Insurance Policy is one of India's most widely purchased individual and family health insurance plans.
+
+It provides coverage for hospitalisation, surgical procedures, day care treatments, maternity, and modern medical expenses. Available as an individual plan or a family floater — covering the entire family under a single sum insured.
+
+Three reasons customers choose Star Health:
+- Largest cashless hospital network in India (14,000+ hospitals).
+- In-house claims team — no third-party administrator delays.
+- Lifelong renewability — no upper age limit on renewal.
+
+----------------------------------------------------
+SECTION 2 — ELIGIBILITY
+----------------------------------------------------
+Entry age:
+- Minimum: 3 months (children covered from 91 days).
+- Maximum: 65 years at the time of first purchase.
+- Children can be covered up to 25 years as long as they are financially dependent.
+
+Family floater coverage includes:
+- Self (primary insured)
+- Spouse
+- Dependent children (3 months to 25 years)
+- Dependent parents (subject to their own entry age conditions)
+
+Renewability: Lifelong. Once the policy is taken, it can be renewed every year with no upper age limit. Waiting periods already served do not restart on continuous renewal.
+
+----------------------------------------------------
+SECTION 3 — SUM INSURED OPTIONS
+----------------------------------------------------
+Available sum insured options:
+- 5 lakh
+- 7.5 lakh
+- 10 lakh
+- 15 lakh
+- 25 lakh
+- 50 lakh
+- 1 crore
+
+The sum insured applies to all in-patient hospitalisation, day care procedures, and associated benefits under the policy.
+
+Recommended sum insured by family profile:
+- Single adult, age 20 to 30, metro city: 5 to 10 lakh.
+- Married couple, no children, age 25 to 35: 10 lakh.
+- Family of four, age 30 to 40, metro city: 15 to 25 lakh.
+- Family of four with senior parents, age 40 to 50: 25 lakh and above.
+
+----------------------------------------------------
+SECTION 4 — WHAT IS COVERED
+----------------------------------------------------
+In-patient hospitalisation:
+- All medical expenses for hospitalisation lasting more than 24 hours.
+- Covers room rent, ICU charges, surgeon fees, anaesthesia, nursing charges, diagnostic tests, medicines, and consumables.
+- Single private AC room — no sub-limit on room rent.
+
+Pre-hospitalisation expenses:
+- Covered for up to 60 days before admission.
+- Includes diagnostic tests, doctor consultations, and medicines directly related to the condition being treated.
+
+Post-hospitalisation expenses:
+- Covered for up to 90 days after discharge.
+- Includes follow-up consultations, medicines, and tests related to the treated condition.
+
+Day care procedures:
+- Over 400 day care treatments covered — procedures that do not require 24-hour hospitalisation.
+- Examples: cataract surgery, chemotherapy, dialysis, lithotripsy, endoscopy, minor surgeries.
+
+Maternity cover:
+- Normal delivery and caesarean section expenses covered.
+- Waiting period: 24 months from policy inception.
+- Newborn baby cover from birth up to 90 days included.
+- Both mother's delivery expenses and newborn's initial medical needs covered.
+
+AYUSH treatment:
+- In-patient expenses for Ayurveda, Yoga, Unani, Siddha, and Homeopathy covered up to the sum insured.
+- Treatment must be received at a recognised AYUSH hospital.
+
+Emergency ambulance:
+- Ambulance charges for emergency transport to hospital are covered.
+
+Mental illness:
+- Hospitalisation for mental illness and psychiatric conditions covered as per Mental Healthcare Act 2017.
+
+Organ donor:
+- Medical expenses for the donor's surgery covered when the insured is the transplant recipient.
+
+Second medical opinion:
+- Cost of obtaining a second opinion from a specialist is covered.
+
+Modern treatments:
+- Robotic surgery, oral chemotherapy, stem cell therapy (specified conditions), immunotherapy, and deep brain stimulation covered.
+
+Restoration of sum insured:
+- 100 percent restoration of sum insured once per policy year for a different illness in the same year.
+- Ensures the family does not run out of coverage mid-year.
+
+Annual health check-up:
+- One free health check-up per adult member per year after two claim-free policy years.
+
+Bariatric surgery:
+- Weight-loss surgical procedures and their complications covered.
+- Waiting period: 3 years.
+
+----------------------------------------------------
+SECTION 5 — WHAT IS NOT COVERED (EXCLUSIONS)
+----------------------------------------------------
+The following are NOT covered:
+
+Pre-existing diseases (during waiting period):
+- Any illness or condition that existed before the policy purchase date is not covered during the pre-existing disease waiting period of 3 years.
+- After the 3-year waiting period on continuous renewal, pre-existing diseases are fully covered.
+
+Initial 30-day waiting period:
+- Any illness contracted within the first 30 days from policy start is not covered.
+- Exception: accidents are covered from day one.
+
+Specified disease waiting period (24 months):
+- Hernia, cataract, joint replacement, kidney stones, sinusitis, varicose veins, and other listed conditions have a 24-month waiting period.
+
+Cosmetic and aesthetic procedures:
+- Liposuction, Botox, implants, facelifts, and similar procedures excluded.
+- Exception: cosmetic repair required due to an accident or cancer treatment is covered.
+
+Dental treatment:
+- Dental and oral surgery excluded unless caused by accidental injury.
+
+Self-inflicted injury:
+- Hospitalisation due to intentional self-harm or suicide attempts not covered.
+
+War, terrorism, nuclear events:
+- Injuries from war, terrorism, nuclear weapons, or civil unrest excluded.
+
+Adventure and hazardous sports:
+- Injuries from bungee jumping, skydiving, mountaineering, racing excluded.
+
+Vaccination and preventive care:
+- Routine vaccinations, inoculations, and preventive check-ups excluded.
+
+Substance abuse:
+- Treatment due to alcohol, drugs, or other intoxicating substances excluded.
+
+Infertility and IVF:
+- Infertility treatment, IVF, IUI, and assisted reproduction are not covered.
+
+Obesity treatment:
+- Non-surgical weight management and obesity-related treatments excluded (bariatric surgery covered after waiting period).
+
+----------------------------------------------------
+SECTION 6 — WAITING PERIODS (SUMMARY)
+----------------------------------------------------
+- Initial waiting period: 30 days for any non-accidental illness. Accidents covered from day one.
+- Pre-existing disease (PED) waiting period: 3 years (36 months) of continuous coverage. After this, all pre-existing conditions fully covered.
+- Specified disease waiting period: 24 months for hernia, cataract, joint replacement, kidney stones, sinusitis, varicose veins, and similar listed conditions.
+- Maternity waiting period: 24 months from policy inception.
+- Bariatric surgery waiting period: 3 years.
+
+Important: Waiting periods already served do not restart when the policy is continuously renewed without a break. If a customer switches from another insurer, IRDAI portability rules allow credit for waiting periods already completed.
+
+----------------------------------------------------
+SECTION 7 — RIDERS AND ADD-ONS
+----------------------------------------------------
+1. Reduction in PED Waiting Period Rider:
+- Reduces the pre-existing disease waiting period from 3 years to 1 year.
+- Available at an additional premium, must be selected at policy inception.
+- Highly recommended for customers with known health conditions.
+
+2. Personal Accident Cover:
+- Lump-sum benefit for accidental death or permanent disability.
+- Amount is separate from health sum insured — adds financial protection on top.
+
+3. Critical Illness Rider:
+- Lump-sum payout on first diagnosis of listed critical illnesses: cancer, heart attack, stroke, kidney failure, major organ transplant.
+- Paid in addition to any hospitalisation claim.
+
+4. Hospital Cash Benefit:
+- Fixed daily cash allowance for each day of hospitalisation.
+- Helps offset incidental expenses: food, transport, income loss during recovery.
+
+5. Super Star Saver (Top-Up):
+- Activates when the base sum insured is exhausted.
+- Provides additional cover at a lower incremental premium.
+
+----------------------------------------------------
+SECTION 8 — TYPICAL CUSTOMER PROFILES (use for fast pitch matching)
+----------------------------------------------------
+Profile A — Young single adult, age 22 to 28:
+- Priority: basic health cover, affordable premium.
+- Recommended: 5 to 10 lakh individual plan.
+- Estimated premium: 6,000 to 9,000 rupees per year.
+
+Profile B — Married couple, age 28 to 35, no kids, dual income:
+- Priority: family cover, maternity planning.
+- Recommended: 10 lakh family floater, add maternity rider.
+- Estimated premium: 14,000 to 20,000 rupees per year.
+
+Profile C — Family of four, age 30 to 40, two school-age children:
+- Priority: comprehensive family protection, large hospital network.
+- Recommended: 15 to 25 lakh family floater.
+- Estimated premium: 18,000 to 35,000 rupees per year.
+
+Profile D — Family with senior parents, age 40 to 55:
+- Priority: high sum insured, pre-existing disease coverage.
+- Recommended: 25 lakh and above, consider PED waiting period reduction rider.
+- Estimated premium: 35,000 to 60,000 rupees per year.
+
+Profile E — 35-year-old smoker male, wants term + health:
+- Priority: life cover plus health cover.
+- Recommended: 1 crore term plan plus 10 lakh family floater health.
+- Estimated combined premium: 18,000 to 28,000 rupees per year.
+
+----------------------------------------------------
+SECTION 9 — CLAIM PROCESS
+----------------------------------------------------
+Cashless claim at a network hospital:
+1. For planned hospitalisation: inform Star Health at least 48 hours in advance via the 24x7 helpline or Star Health mobile app.
+2. For emergencies: inform Star Health within 24 hours of admission.
+3. Show Star Health insurance card or policy details at the hospital's insurance desk.
+4. Hospital raises a pre-authorisation request with Star Health directly.
+5. Star Health approves and settles the bill with the hospital at discharge. Customer pays only for non-covered items.
+6. 90 percent of cashless claims are settled within 2 hours.
+
+Reimbursement claim (non-network hospital):
+1. Keep all original bills, diagnostic reports, prescriptions, discharge summary, and doctor certificates.
+2. File the reimbursement claim form within 15 days of discharge.
+3. Submit to nearest Star Health branch or upload via the Star Health app or website.
+4. Approved amount transferred to the insured's bank account after review.
+
+24x7 helpline available for claims support and general queries.
+
+----------------------------------------------------
+SECTION 10 — PREMIUM RANGE (indicative only — exact quote from advisor)
+----------------------------------------------------
+Premiums depend on: age, sum insured, number of family members, city tier, and selected riders.
+
+Indicative ranges:
+- Individual, age 30, 5 lakh sum insured: approx 6,000 to 9,000 rupees per year.
+- Family of four, age 35, 10 lakh sum insured: approx 18,000 to 28,000 rupees per year.
+- Individual above 45, 50 lakh sum insured: approx 40,000 to 80,000 rupees or more per year.
+
+GST at 18 percent applies on all health insurance premiums.
+
+Never quote a definite premium. Always give a range and route the customer to an advisor for the exact quote based on their specific profile and health history.
+
+----------------------------------------------------
+SECTION 11 — PORTABILITY AND RENEWAL
+----------------------------------------------------
+Portability:
+- Customers switching from any other IRDAI-registered insurer to Star Health can carry over waiting period credits.
+- IRDAI mandates that waiting periods already served under a prior policy are honoured.
+- Application for portability must be made at least 45 days before the existing policy's renewal date.
+
+Renewal:
+- Annual renewal. No upper age limit — lifelong renewability guaranteed.
+- Continuous renewal preserves all waiting period credits.
+- A break in coverage resets waiting periods.
+
+----------------------------------------------------
+SECTION 12 — BEST TIME FOR ADVISOR CALL-BACK
+----------------------------------------------------
+- Best time of day for an advisor call: within 7 days, Mon-Fri, 10 AM to 6 PM.
+- For urgent queries, the 24x7 Star Health helpline is available.
+- Customers can also visit the nearest Star Health branch for in-person assistance.
+
+----------------------------------------------------
+SECTION 13 — ELIGIBILITY BOUNDARY AND PRODUCT ROUTING
+----------------------------------------------------
+The Star Health Comprehensive Insurance Policy has a maximum entry age of 65 years.
+
+Customers who are 66 years or older at first purchase are NOT eligible for the Comprehensive plan.
+They must instead be offered the Star Health Senior Citizens Red Carpet Health Insurance Plan.
+
+A customer aged 60 to 65 may choose either the Comprehensive plan or the Senior Citizens Red Carpet plan, depending on their health profile and preference. The advisor helps decide.
+
+If the customer's age is not yet confirmed, always ask before recommending a product.
+
+----------------------------------------------------
+SECTION 14 — STAR HEALTH SENIOR CITIZENS RED CARPET HEALTH INSURANCE PLAN
+----------------------------------------------------
+This plan is specifically designed for Indian customers aged 60 to 75 years who cannot or do not want the standard Comprehensive plan.
+
+Entry age: 60 to 75 years at first purchase.
+Renewability: Lifelong — the policy can be renewed every year with no upper age limit.
+
+Sum insured options:
+- 1 lakh, 2 lakh, 3 lakh, 4 lakh, 5 lakh, 7.5 lakh, 10 lakh, 15 lakh, 25 lakh.
+
+What is covered:
+- In-patient hospitalisation for illnesses and accidents.
+- Single private AC room — no sub-limit on room rent.
+- Pre-hospitalisation expenses: up to 30 days before admission.
+- Post-hospitalisation expenses: up to 60 days after discharge.
+- Day care procedures: over 400 procedures not requiring 24-hour stay (e.g. cataract surgery, dialysis, chemotherapy).
+- Emergency ambulance charges covered.
+- Annual health check-up: one free check-up per year included.
+- AYUSH (Ayurveda, Yoga, Unani, Siddha, Homeopathy): covered at recognised AYUSH hospitals.
+
+Co-payment — MANDATORY and non-negotiable:
+- 30 percent co-payment applies on all admissible claims.
+- This means: the customer pays 30 percent of every eligible claim; Star Health pays 70 percent.
+- Co-payment is a standard IRDAI-permitted feature of senior citizen health insurance in India. It cannot be waived. It is not a defect — it allows senior citizens to get meaningful coverage at a more affordable premium.
+- Example: If the claim is Rs. 1 lakh, the customer pays Rs. 30,000 and Star Health pays Rs. 70,000.
+- This must always be explained to the customer before they agree to a callback.
+
+Waiting periods for the Senior Citizens Red Carpet plan:
+- Initial waiting period: 30 days for any non-accidental illness. Accidents are covered from day one.
+- Pre-existing disease (PED) waiting period: 12 months. Named and specified pre-existing conditions (such as diabetes, hypertension, thyroid, asthma — as declared at time of purchase) are covered after 12 months of continuous coverage.
+- Specified disease waiting period: 12 months for listed conditions including hernia, cataract, joint replacement, kidney stones, and sinusitis. This is a reduction from the 24-month wait in the standard Comprehensive plan.
+- There is no PED waiting period reduction rider available for this plan.
+
+Premium range (indicative only — exact quote from advisor):
+- Premium depends on exact age, city, sum insured, and health declaration.
+- Indicative range: Rs. 25,000 to Rs. 1,20,000 or more per year.
+- For a 65-year-old, 10 lakh sum insured: approximately Rs. 40,000 to Rs. 60,000 per year.
+- For a 70-year-old, 10 lakh sum insured: approximately Rs. 60,000 to Rs. 90,000 per year.
+- GST at 18 percent is applicable on top of the premium.
+- The daily cost equivalent: roughly Rs. 110 to Rs. 250 per day depending on age and cover chosen.
+
+Tax benefit under Section 80D:
+- Senior citizens can claim a tax deduction of up to Rs. 50,000 on health insurance premiums paid.
+- This is higher than the standard Rs. 25,000 deduction for non-senior adults.
+- Confirm exact eligibility with a CA.
+
+Medical tests before issuance:
+- Medical tests may be required depending on age and sum insured chosen.
+- The advisor confirms the test requirements at proposal stage.
+
+What is NOT covered (same major exclusions as Comprehensive plan):
+- Cosmetic and aesthetic procedures.
+- Dental treatment (except accidental injury).
+- Self-inflicted injuries.
+- War, terrorism, nuclear events.
+- Adventure and hazardous sports injuries.
+- Infertility and IVF.
+- Vaccination and preventive care.
+
+Important note on the 30 percent co-payment:
+- At claim time, after Star Health approves the claim amount, the customer's share is 30 percent.
+- If Star Health does not approve a part of the claim (e.g. non-covered items), that portion is also fully the customer's cost.
+- Customers should plan for this co-payment when estimating their out-of-pocket exposure.
+
+----------------------------------------------------
+SECTION 15 — NO CLAIM BONUS
+----------------------------------------------------
+Under the Star Health Comprehensive Insurance Policy, a No Claim Bonus (NCB) applies:
+- If no claim is made in a policy year, the sum insured increases by 10 percent for the next year at no extra premium, up to a maximum bonus of 50 percent.
+- If a claim is made in a year, the accumulated bonus reduces by 10 percent for the next year.
+- NCB applies on the base sum insured, not on rider benefits.
+- NCB does not apply on the Senior Citizens Red Carpet plan — confirm with advisor.
+
+----------------------------------------------------
+SECTION 16 — SECTION 80D TAX DEDUCTION (COMPREHENSIVE PLAN)
+----------------------------------------------------
+Health insurance premiums paid for the Comprehensive plan are eligible for deduction under Section 80D of the Income Tax Act:
+- Self, spouse, and dependent children: deduction up to Rs. 25,000 per year.
+- If the insured is a senior citizen (60 years or above): deduction up to Rs. 50,000 per year.
+- Premium paid for parents who are senior citizens: additional deduction up to Rs. 50,000 per year.
+- Premium paid for parents who are not senior citizens: additional deduction up to Rs. 25,000 per year.
+- Maximum total deduction possible: Rs. 1,00,000 per year (self as senior + senior parents).
+- This is a tax benefit, not a premium subsidy. Consult a CA for exact applicability.
