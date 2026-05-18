@@ -11,13 +11,13 @@ A multilingual insurance sales voicebot, "Aarav", that:
 - Greets the customer in Hinglish, conducts a 3-5 turn discovery (age, family, existing cover, primary concern), recommends one Star Health product grounded in the brochure, answers policy questions strictly from the document, refuses out-of-scope or non-compliant requests, and captures handoff details (name, city, callback time) for a human advisor.
 - Speaks in English, Hindi, or Hinglish — language auto-detected per turn by Sarvam's Saaras STT. Configured and tested for English (en-IN), Hindi (hi-IN), and Hinglish (code-mixed, detected as hi-IN). The architecture supports all 11 Sarvam languages out of the box; the submission scope is English + Hindi + Hinglish because that is the realistic BFSI customer profile in Tier 1 and Tier 2 cities.
 - Uses the full Sarvam pipeline: Saaras v3 for STT, Gemini 2.5 Flash for the LLM brain (hot-swappable — see architecture decisions), Bulbul v3 for TTS with the "anand" voice profile.
-- RAG over a 6-section Star Health brochure with eligibility grids, sum-assured multipliers, exclusions, riders, and compliance rules.
+- RAG over the Star Health Comprehensive brochure — 203 snippets across 17 sections, covering eligibility grids, sum-assured multipliers, exclusions, riders, and compliance rules.
 - Compliance post-filters that rewrite the LLM reply if it slips — definite premium quotes, claim approval promises, sensitive data requests (PAN / Aadhaar / OTP), tax / medical / investment advice, competitor comparisons, unofficial channel promises (WhatsApp / personal email), AI self-disclosure, and brochure-violating rider offers (Smart Cover for income below 10 lakh; CIDR for age 56-60).
 
 ## Try it
 
-- **Live URL:** [will be inserted in Monday email] — open in Chrome, click "Start conversation", then hold the mic button to talk.
-- **GitHub:** [will be inserted in Monday email]
+- **Live URL:** https://yashbhatter-sarvam-insurance-voicebot.hf.space — open in Chrome, click "Start conversation", speak naturally.
+- **GitHub:** https://github.com/yashbhatter10/sarvam-insurance-voicebot
 
 ## Architecture decisions (and why)
 
@@ -37,11 +37,11 @@ FastAPI (orchestrator, state machine, guardrails, RAG)
 
 A parallel `agents/livekit_agent.py` shows the production-pattern variant — same agent expressed via Sarvam's official LiveKit + Sarvam plugin path, with the four best-practice flags (`flush_signal=True`, `turn_detection="stt"`, `min_endpointing_delay=0.07`, no VAD on AgentSession) applied. The demo URL runs the FastAPI path because it's simpler to host on a free Hugging Face Space and easier to read; the LiveKit variant is the production migration story.
 
-The prompt structure follows a GreyLabs production reference for Axis Max Life's Vidya bot — identity, end goal, allowed / not allowed lists, objection handling, callback rules, voice AI behaviour, and a knowledge-base injection point. Adapted for inbound (Aarav doesn't know the customer in advance) and for multilingual auto-detect (rather than Hindi-only).
+The prompt structure follows a production pattern used in enterprise BFSI voice agents — identity, end goal, allowed / not allowed lists, objection handling, callback rules, voice AI behaviour, and a knowledge-base injection point. Adapted for inbound (Aarav doesn't know the customer in advance) and for multilingual auto-detect (rather than Hindi-only).
 
 ## What I deliberately did NOT build (and what would change for production)
 
-**Dynamic runtime variables.** A real production deployment would parameterise the system prompt with values pulled from the customer record before each call — `customer_name`, `age`, `gender`, `marital_status`, `city`, `income_range`, `occupation`, `education`, `smoker_status`, `dropped_plan_value`. The GreyLabs Vidya reference uses these heavily. For this assignment they are hardcoded into the conversation flow (Aarav discovers them) rather than injected from a CRM. The architecture is variable-aware — the injection point is a one-line change in `app/agent/policy.py:build_messages()`, and the new keys plug straight into the prompt template via `.format(...)`.
+**Dynamic runtime variables.** A real production deployment would parameterise the system prompt with values pulled from the customer record before each call — `customer_name`, `age`, `gender`, `marital_status`, `city`, `income_range`, `occupation`, `education`, `smoker_status`, `dropped_plan_value`. A production deployment uses these heavily. For this assignment they are hardcoded into the conversation flow (Aarav discovers them) rather than injected from a CRM. The architecture is variable-aware — the injection point is a one-line change in `app/agent/policy.py:build_messages()`, and the new keys plug straight into the prompt template via `.format(...)`.
 
 **Outbound dialer and telephony.** Insurance voicebots in production are usually outbound, with the bot dialling a customer's number off a CRM lead. I scoped to inbound browser-WebRTC because (a) the assignment is testing the prompt and pipeline, not telephony integration, (b) outbound requires a real SIP trunk via Twilio / Exotel / Plivo, which adds spend and 24-48 hours of TRAI verification with no signal benefit, and (c) Anand can dial in to the browser URL in 10 seconds. The production migration is one configuration change in LiveKit — swap the WebRTC transport for SIP transport via Plivo / Exotel / Twilio. See `agents/livekit_agent.py` for the structure.
 
@@ -73,12 +73,12 @@ These are the 9 conversations that decide whether the bot ships. I ran each at l
 
 ## Latency on the deployed URL
 
-Round-trip end-to-end latency (from end-of-user-speech to first-audio-byte from Aarav), measured across 20 turns on the demo deployment:
+Round-trip end-to-end latency (from end-of-user-speech to first-audio-byte from Aarav), measured on the free HuggingFace Space deployment:
 
-- p50: ~4.5 seconds (STT ~1.1s + LLM ~2.5s + TTS ~0.9s)
-- p95: ~6.0 seconds
+- Observed range: 7–14 seconds
+- Breakdown: STT ~1–2s + LLM ~4–8s + TTS ~1–2s, plus REST-over-HTTPS overhead across three separate API calls on shared compute
 
-The breakdown is visible in the per-turn latency bar in the UI. The dominant cost is the REST-over-HTTPS hop for each service call. For comparison, Sarvam Samvaad benchmarks <500ms on its enterprise stack — the gap is almost entirely explained by the transport layer. Both Saaras and Bulbul support WebSocket streaming (available since mid-2025); on that path, STT latency drops as partial transcripts stream in, and TTS first-audio arrives in 200-400ms rather than waiting for the full audio buffer. The production migration to the LiveKit variant closes most of this gap — `min_endpointing_delay=0.07` matches Saaras's 70ms processing latency exactly.
+The breakdown is visible in the per-turn latency bar in the UI. The dominant cost is the sequential REST-over-HTTPS hop for each service call on free-tier infrastructure. For comparison, Sarvam Samvaad benchmarks <500ms on its enterprise stack — the gap is almost entirely explained by the transport layer and compute tier. Both Saaras and Bulbul support WebSocket streaming; on that path, STT latency drops as partial transcripts stream in, and TTS first-audio arrives in 200–400ms rather than waiting for the full audio buffer. The production migration to the LiveKit variant closes most of this gap — `min_endpointing_delay=0.07` matches Saaras's 70ms processing latency exactly.
 
 The UI exposes a stacked per-turn latency bar so the breakdown is visible — STT / Retrieval / LLM / TTS each shown separately.
 
@@ -109,12 +109,10 @@ Each is enforced both via the system prompt and via a post-filter regex on the L
 - `app/main.py` — FastAPI server.
 - `frontend/index.html` — browser UI with WebRTC mic, transcript, sources, metrics.
 - `agents/livekit_agent.py` — production-pattern variant on LiveKit + Sarvam plugin.
-- `data/sample_insurance_policy.txt` — Star Health brochure (RAG corpus).
-- `docs/VOICEBOT_PROMPT.md` — the canonical prompt in markdown.
+- `data/sample_insurance_policy.txt` — Star Health brochure (RAG corpus, 17 sections, 203 snippets).
 - `docs/VOICEBOT_PRODUCT_SPEC.md` — full product spec.
 - `docs/VOICE_AGENT_ARCHITECTURE.md` — architecture diagram and migration story.
-- `docs/SARVAM_PLATFORM_ROUTE.md` — verified Sarvam product surface (Samvaad, Arya, Akshar, Studio, etc.) — why Route B was the right call given the assignment scope.
-- `reports/sarvam-assignment-report.pdf` — full Part 1 + Part 2 report.
+- `reports/sarvam-assignment-report.pdf` — combined Part 1 + Part 2 report PDF.
 - `Dockerfile` — for Hugging Face Spaces deployment.
 
 ## Part 2 — Market research thesis
