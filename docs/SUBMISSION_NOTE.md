@@ -1,6 +1,6 @@
 # Submission Note — Aarav, Star Health and Allied Insurance Voicebot
 
-> One-page note attached to the Monday submission email alongside the report PDF and the live URL. This explains what was built, what was deliberately skipped, and why.
+> This explains what was built, what was deliberately skipped, and why.
 
 ---
 
