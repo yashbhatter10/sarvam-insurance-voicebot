@@ -1,3 +1,12 @@
+---
+title: Aarav - Star Health Insurance Voicebot
+emoji: 🎙️
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # Aarav — Star Health Insurance Voicebot
 
 > Sarvam AI · CS Round 2 · Yashwardhan Bhatter · May 2026
