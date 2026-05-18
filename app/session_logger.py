@@ -46,6 +46,38 @@ def log_session(session_data: dict) -> Path:
     return path
 
 
+def _smtp_587(from_addr: str, password: str, recipients: list, raw: str) -> None:
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as s:
+        s.ehlo(); s.starttls(); s.ehlo()
+        s.login(from_addr, password)
+        s.sendmail(from_addr, recipients, raw)
+
+
+def _smtp_465(from_addr: str, password: str, recipients: list, raw: str) -> None:
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as s:
+        s.login(from_addr, password)
+        s.sendmail(from_addr, recipients, raw)
+
+
+def send_startup_ping() -> None:
+    """Fire a single test email on server boot so you know email is working."""
+    if not _NOTIFY_EMAIL or not _GMAIL_APP_PASS:
+        return
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = "[Aarav] Space is live — email notifications active"
+    msg["From"]    = f"Aarav Voicebot <{_FROM_EMAIL}>"
+    msg["To"]      = _NOTIFY_EMAIL
+    body = "Aarav started up and email is working. You'll receive a session report after each conversation."
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+    for _send in [_smtp_587, _smtp_465]:
+        try:
+            _send(_FROM_EMAIL, _GMAIL_APP_PASS, [_NOTIFY_EMAIL], msg.as_string())
+            log.info("Startup ping sent → %s", _NOTIFY_EMAIL)
+            return
+        except Exception as e:
+            log.warning("Startup ping failed: %s", e)
+
+
 def send_session_email(session_data: dict) -> bool:
     """Send a session transcript email. Returns True if sent successfully."""
     if not _NOTIFY_EMAIL or not _GMAIL_APP_PASS:
@@ -60,15 +92,16 @@ def send_session_email(session_data: dict) -> bool:
     msg.attach(MIMEText(plain, "plain", "utf-8"))
     msg.attach(MIMEText(html,  "html",  "utf-8"))
 
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
-            server.login(_FROM_EMAIL, _GMAIL_APP_PASS)
-            server.sendmail(_FROM_EMAIL, [_NOTIFY_EMAIL], msg.as_string())
-        log.info("Session email sent → %s", _NOTIFY_EMAIL)
-        return True
-    except Exception as e:
-        log.warning("Email failed: %s", e)
-        return False
+    # Try port 587 (STARTTLS) first — allowed on most cloud hosts including HF Spaces.
+    # Fall back to port 465 (SSL) for environments that prefer it.
+    for attempt, _send in enumerate([_smtp_587, _smtp_465]):
+        try:
+            _send(_FROM_EMAIL, _GMAIL_APP_PASS, [_NOTIFY_EMAIL], msg.as_string())
+            log.info("Session email sent → %s (attempt %d)", _NOTIFY_EMAIL, attempt + 1)
+            return True
+        except Exception as e:
+            log.warning("Email attempt %d failed: %s", attempt + 1, e)
+    return False
 
 
 def get_all_sessions(limit: int = 50) -> list[dict]:
