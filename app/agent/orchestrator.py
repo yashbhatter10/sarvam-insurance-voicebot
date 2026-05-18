@@ -190,7 +190,11 @@ class Orchestrator:
         t_ret_start = time.time()
         snippets: list[Snippet] = []
         if session.state in (State.PITCH, State.QA, State.DISCOVERY):
-            snippets = self.rag.retrieve(user_text, k=2)
+            # min_score=1.5 (not 4.0) so short conversational queries like
+            # "premium kitna?" or "cashless hoga?" (1-token overlap, score ≈ 1.8)
+            # still retrieve snippets. The LLM guardrail handles any remaining
+            # out-of-scope leakage.
+            snippets = self.rag.retrieve(user_text, k=3, min_score=1.5)
         retrieval_ms = int((time.time() - t_ret_start) * 1000)
 
         # 4. LLM

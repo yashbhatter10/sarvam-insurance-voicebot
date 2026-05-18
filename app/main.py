@@ -121,7 +121,8 @@ async def _text_turn(
     t_ret = time.time()
     snippets = []
     if session.state in (State.PITCH, State.QA, State.DISCOVERY):
-        snippets = _rag.retrieve(text, k=3)
+        # Same threshold as handle_turn — allow short conversational queries through.
+        snippets = _rag.retrieve(text, k=3, min_score=1.5)
     retrieval_ms = int((time.time() - t_ret) * 1000)
 
     messages = build_messages(
