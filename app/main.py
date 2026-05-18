@@ -30,7 +30,7 @@ logging.basicConfig(
 from app.agent.orchestrator import Orchestrator, SessionMetrics
 from app.rag import BrochureRAG
 from app.sarvam_client import SarvamClient
-from app.session_logger import build_session_data, get_all_sessions, log_session, send_session_email
+from app.session_logger import build_session_data, get_all_sessions, log_session, send_session_email, send_startup_ping
 
 load_dotenv()
 
@@ -47,6 +47,9 @@ _sarvam = SarvamClient()
 _rag = BrochureRAG()
 _orchestrator = Orchestrator(_sarvam, _rag)
 _sessions: dict[str, SessionMetrics] = {}
+
+# Fire a startup ping so we know email is wired correctly the moment the Space boots
+send_startup_ping()
 
 
 def _get_session(session_id: str) -> SessionMetrics:
