@@ -17,7 +17,7 @@ Aarav is a multilingual insurance sales voicebot that speaks Hinglish, knows the
 
 ## Demo
 
-Hosted on HuggingFace Spaces → **[live link here]**
+Hosted on HuggingFace Spaces → **[yashbhatter-sarvam-insurance-voicebot.hf.space](https://yashbhatter-sarvam-insurance-voicebot.hf.space)**
 
 Click the mic. Speak in Hindi, English, or Hinglish. Aarav handles it.
 
@@ -71,7 +71,7 @@ app/
     └── voice_design.py  Voice + pace selection per language/gender
 
 data/
-└── sample_insurance_policy.txt   Star Health brochure (RAG corpus, 16 sections)
+└── sample_insurance_policy.txt   Star Health brochure (RAG corpus, 17 sections, 203 snippets)
 
 frontend/
 └── index.html           Single-page app — mic, transcript, sources, metrics
