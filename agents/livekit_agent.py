@@ -35,7 +35,7 @@ logger.setLevel(logging.INFO)
 
 BROCHURE = (Path(__file__).resolve().parent.parent / "data" / "sample_insurance_policy.txt").read_text(encoding="utf-8")
 
-AARAV_INSTRUCTIONS = f"""You are Aarav, a polite insurance advisor for ShieldCare Insurance.
+AARAV_INSTRUCTIONS = f"""You are Aarav, a polite insurance advisor for Star Health Insurance.
 You're on a VOICE call. Your text will be spoken. Use 2-3 short sentences max.
 Ask one question at a time. Write numbers as words (ten lakh, not 10,00,000).
 
