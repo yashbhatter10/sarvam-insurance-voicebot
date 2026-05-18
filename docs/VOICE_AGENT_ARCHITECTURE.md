@@ -86,7 +86,7 @@ Thin wrapper around Sarvam APIs:
 40-line LiveKit + Sarvam plugin variant. Not part of the live demo — included as the "production migration path" exhibit.
 
 ### `data/sample_insurance_policy.txt`
-A representative one-page insurance brochure (ShieldCare Family Floater Health, Term Plan, Personal Accident Plan). Written like a real product summary so RAG has things to ground on.
+A representative one-page insurance brochure (Star Health Comprehensive Insurance Policy, Term Plan, Personal Accident Plan). Written like a real product summary so RAG has things to ground on.
 
 ## Why this architecture is honest
 

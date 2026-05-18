@@ -14,3 +14,20 @@ dist/
 *.log
 reports/test_report_*.md
 logs/
+
+# Internal working docs — not for public repo
+docs/ANAND_EMAIL.md
+docs/ANAND_SUBMISSION_EMAIL.md
+docs/YASH_ACTION_ITEMS.md
+docs/MONDAY_SUBMISSION_CHECKLIST.md
+docs/SUBMISSION_CHECKLIST.md
+docs/EXECUTION_PLAN.md
+docs/SARVAM_DASHBOARD_PLAYBOOK.md
+docs/SARVAM_PLATFORM_ROUTE.md
+docs/HUGGINGFACE_DEPLOY.md
+docs/GEMINI_ADVERSARIAL_TEST_PROMPT.md
+docs/GEMINI_LIVE_EVAL_PROMPT.md
+docs/AI_STUDIO_TEST_PROMPT.md
+docs/FINAL_PROMPT.md
+docs/VOICEBOT_PROMPT.md
+docs/PART2_MARKET_THESIS.md

@@ -1,4 +1,4 @@
-# Submission Note — Aarav, ShieldCare Insurance Voicebot
+# Submission Note — Aarav, Star Health and Allied Insurance Voicebot
 
 > One-page note attached to the Monday submission email alongside the report PDF and the live URL. This explains what was built, what was deliberately skipped, and why.
 
@@ -8,10 +8,10 @@
 
 A multilingual insurance sales voicebot, "Aarav", that:
 
-- Greets the customer in Hinglish, conducts a 3-5 turn discovery (age, family, existing cover, primary concern), recommends one ShieldCare product grounded in the brochure, answers policy questions strictly from the document, refuses out-of-scope or non-compliant requests, and captures handoff details (name, city, callback time) for a human advisor.
+- Greets the customer in Hinglish, conducts a 3-5 turn discovery (age, family, existing cover, primary concern), recommends one Star Health product grounded in the brochure, answers policy questions strictly from the document, refuses out-of-scope or non-compliant requests, and captures handoff details (name, city, callback time) for a human advisor.
 - Speaks in English, Hindi, or Hinglish — language auto-detected per turn by Sarvam's Saaras STT. Configured and tested for English (en-IN), Hindi (hi-IN), and Hinglish (code-mixed, detected as hi-IN). The architecture supports all 11 Sarvam languages out of the box; the submission scope is English + Hindi + Hinglish because that is the realistic BFSI customer profile in Tier 1 and Tier 2 cities.
 - Uses the full Sarvam pipeline: Saaras v3 for STT, Gemini 2.5 Flash for the LLM brain (hot-swappable — see architecture decisions), Bulbul v3 for TTS with the "anand" voice profile.
-- RAG over a 6-section ShieldCare brochure with eligibility grids, sum-assured multipliers, exclusions, riders, and compliance rules.
+- RAG over a 6-section Star Health brochure with eligibility grids, sum-assured multipliers, exclusions, riders, and compliance rules.
 - Compliance post-filters that rewrite the LLM reply if it slips — definite premium quotes, claim approval promises, sensitive data requests (PAN / Aadhaar / OTP), tax / medical / investment advice, competitor comparisons, unofficial channel promises (WhatsApp / personal email), AI self-disclosure, and brochure-violating rider offers (Smart Cover for income below 10 lakh; CIDR for age 56-60).
 
 ## Try it
@@ -92,7 +92,7 @@ The five IRDAI bright lines the bot will not cross under any circumstance:
 4. No tax / legal / medical / investment advice — redirects to CA / lawyer / doctor / advisor.
 5. No request for PAN / Aadhaar / OTP / bank details over voice — refuses, explains why.
 
-Plus two ShieldCare-specific product bright lines from the brochure:
+Plus two Star Health-specific product bright lines from the brochure:
 
 6. No Smart Cover offered to customers below 10 lakh income.
 7. No CIDR rider offered to customers aged 56-60.
@@ -109,7 +109,7 @@ Each is enforced both via the system prompt and via a post-filter regex on the L
 - `app/main.py` — FastAPI server.
 - `frontend/index.html` — browser UI with WebRTC mic, transcript, sources, metrics.
 - `agents/livekit_agent.py` — production-pattern variant on LiveKit + Sarvam plugin.
-- `data/sample_insurance_policy.txt` — ShieldCare brochure (RAG corpus).
+- `data/sample_insurance_policy.txt` — Star Health brochure (RAG corpus).
 - `docs/VOICEBOT_PROMPT.md` — the canonical prompt in markdown.
 - `docs/VOICEBOT_PRODUCT_SPEC.md` — full product spec.
 - `docs/VOICE_AGENT_ARCHITECTURE.md` — architecture diagram and migration story.
