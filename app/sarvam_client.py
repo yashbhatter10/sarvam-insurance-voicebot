@@ -46,9 +46,9 @@ def _strip_reasoning(text: str) -> str:
     """Remove <think>...</think> blocks and any reasoning-leak patterns.
 
     Handles three cases:
-    1. Well-formed: <think>reasoning</think> answer  → keep just "answer"
-    2. Unclosed: <think>reasoning (cut off) → keep nothing (return empty)
-    3. No tags but obvious reasoning prose → return empty so the orchestrator
+    1. Well-formed: <think>reasoning</think> answer - keep just "answer"
+    2. Unclosed: <think>reasoning (cut off) - keep nothing (return empty)
+    3. No tags but obvious reasoning prose - return empty so the orchestrator
        falls back to a graceful retry instead of speaking the reasoning aloud.
     """
     if not text:
@@ -61,7 +61,7 @@ def _strip_reasoning(text: str) -> str:
     # Catch tag-less reasoning prose
     head = cleaned[:60].lower()
     if any(head.startswith(p) for p in _REASONING_PROSE_STARTS):
-        logger.warning("Reasoning prose leaked without tags — returning empty so caller can retry. Head=%r", head)
+        logger.warning("Reasoning prose leaked without tags - returning empty so caller can retry. Head=%r", head)
         return ""
 
     return cleaned
@@ -89,7 +89,7 @@ class SarvamClient:
     - TTS: Sarvam Bulbul v3 (always)
     - LLM: Gemini Flash if GEMINI_API_KEY is set (faster, ~500ms); otherwise
       Sarvam-M (reasoning, ~2-3s) as the fallback. The voice stack stays Sarvam
-      because the distinctive product capability is Indic voice quality — the
+      because the distinctive product capability is Indic voice quality - the
       brain is a swappable component, exactly the pattern Sarvam's own LiveKit
       cookbook follows.
     """
@@ -141,7 +141,7 @@ class SarvamClient:
             # mode, input_audio_codec, request_options. We let codec auto-detect from
             # the webm container the browser sends.
             #   - model `saarika:v2.5` transcribes in source language (what we want).
-            #   - `saaras:v3` would TRANSLATE to English — wrong for us.
+            #   - `saaras:v3` would TRANSLATE to English - wrong for us.
             #   - `language_code="unknown"` is a valid literal for auto-detect.
             lang_for_sdk = language if language else "unknown"
             resp = self._sdk.speech_to_text.transcribe(
@@ -161,7 +161,7 @@ class SarvamClient:
                 latency_ms=int((time.time() - t0) * 1000),
             )
         except Exception as exc:
-            # Loud failure — log the type and message so the cause is obvious
+            # Loud failure - log the type and message so the cause is obvious
             logger.error("STT call FAILED (%s: %s). Returning empty transcript.",
                          type(exc).__name__, exc)
             return STTResult(
@@ -175,7 +175,7 @@ class SarvamClient:
     def _llm_gemini(self, messages: list[dict], temperature: float = 0.5) -> str:
         """Call Gemini via direct REST (OpenAI-compatible endpoint).
 
-        Uses httpx — no google.generativeai library required.
+        Uses httpx - no google.generativeai library required.
         Works with gemini-2.5-flash and all future Gemini models.
         The `temperature` parameter is exposed so the retry path can use 0.7
         to encourage a more complete response on the second attempt.
@@ -200,11 +200,11 @@ class SarvamClient:
 
     # --------------------------- LLM ---------------------------
     def llm(self, messages: list[dict], *, model: str = "sarvam-m", stream: bool = False) -> str:
-        """LLM chat completion — Gemini Flash only, with one retry on short/empty reply.
+        """LLM chat completion - Gemini Flash only, with one retry on short/empty reply.
 
         Why Gemini only (no Sarvam-M fallback):
-        - Gemini 2.5 Flash has a 1M token context window → never overflows regardless
-          of conversation length.
+        - Gemini 2.5 Flash has a 1M token context window, so it never overflows
+          regardless of conversation length.
         - Sarvam-M's 7192-token limit means the 24k system prompt alone consumes ~85%
           of its budget; it reliably fails after a handful of turns.
         - STT + TTS still run through Sarvam (Saaras v3 + Bulbul v3). Only the LLM
@@ -213,14 +213,14 @@ class SarvamClient:
         Retry strategy when the first Gemini response is too short:
         - Append a brief internal nudge to the message list asking for a fuller reply.
         - Retry once at a slightly higher temperature (0.7 vs 0.5).
-        - If the retry also fails → return a natural recovery phrase so the conversation
+        - If the retry also fails, return a natural recovery phrase so the conversation
           can continue rather than silently breaking.
         """
         t0 = time.time()
         if self.mock or not self._sdk:
             return _mock_llm_reply(messages)
 
-        # Minimum useful response length — shorter means Gemini acknowledged but
+        # Minimum useful response length - shorter means Gemini acknowledged but
         # didn't actually respond (e.g. truncated STT input confused it).
         _MIN_RESPONSE_LEN = 20
 
@@ -238,13 +238,13 @@ class SarvamClient:
                     return content.strip()
                 if content:
                     logger.warning(
-                        "Gemini response too short (%d chars): %r — retrying with nudge.",
+                        "Gemini response too short (%d chars): %r - retrying with nudge.",
                         len(content.strip()), content.strip(),
                     )
                 else:
-                    logger.warning("Gemini returned empty content — retrying with nudge.")
+                    logger.warning("Gemini returned empty content - retrying with nudge.")
             except Exception as exc:
-                logger.error("Gemini attempt 1 FAILED (%s: %s) — retrying.", type(exc).__name__, exc)
+                logger.error("Gemini attempt 1 FAILED (%s: %s) - retrying.", type(exc).__name__, exc)
 
             # ── Attempt 2: retry with an internal nudge ───────────────────────
             # Append a hidden system nudge asking Gemini to give a fuller reply.
@@ -475,12 +475,12 @@ def _mock_llm_reply(messages: list[dict]) -> str:
             return _MOCK_REPLIES["redirect_firm"]
         return _MOCK_REPLIES["redirect_offtopic"]
 
-    # ── IVF / infertility (before competitor — checked first) ───────────────
+    # IVF / infertility (before competitor - checked first)
     if any(w in last for w in ["ivf", "iui", "infertility", "assisted reproduction", "fertility"]):
         return _MOCK_REPLIES["guardrail_ivf"]
 
     # ── Competitor comparison ────────────────────────────────────────────────
-    # NOTE: "lic" is 3 chars and is a substring of "policy" — use word boundaries
+    # NOTE: "lic" is 3 chars and is a substring of "policy" - use word boundaries
     # by checking for " lic " or start/end of string, not a raw substring.
     _competitor_full = ["hdfc", "bajaj", "icici", "niva bupa", "better than",
                         "compare", "which one is better"]
@@ -540,7 +540,7 @@ def _mock_llm_reply(messages: list[dict]) -> str:
 
     # ── Parents with conditions → pitch 25 lakh (before generic PED check) ──
     # When user mentions parents + a health condition, it's a pitch opportunity,
-    # not just a waiting-period Q — we recommend 25 lakh+ floater first.
+    # not just a waiting-period Q - we recommend 25 lakh+ floater first.
     if any(w in last for w in ["parents", "mummy", "papa", "maa", "pitaji"]):
         return _MOCK_REPLIES["pitch_25lakh"]
 
@@ -581,7 +581,7 @@ def _mock_llm_reply(messages: list[dict]) -> str:
     if any(w in last for w in ["still feels", "still too", "too much", "feels too"]):
         return _MOCK_REPLIES["objection_probe"]
 
-    # ── Pitch signals — specific profiles ───────────────────────────────────
+    # Pitch signals - specific profiles
     if any(w in last for w in ["parents", "mummy", "papa", "senior", "65", "62", "60"]):
         return _MOCK_REPLIES["pitch_25lakh"]
     if any(w in last for w in ["single", "alone", "just me", "individual", "28 saal",
@@ -593,7 +593,7 @@ def _mock_llm_reply(messages: list[dict]) -> str:
                                 "unka bhi", "cover chahiye", "same policy"]):
         return _MOCK_REPLIES["pitch_floater"]
 
-    # ── Discovery signals — ages / family info ───────────────────────────────
+    # Discovery signals - ages / family info
     if any(w in last for w in ["wife", "husband", "kids", "children", "married",
                                 "bachche", "ghar mein", "family", "log hain"]):
         return _MOCK_REPLIES["discovery_ages"]
