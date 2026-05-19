@@ -39,10 +39,10 @@ FRONTEND = ROOT / "frontend"
 
 _ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
 
-app = FastAPI(title="Sarvam Insurance Voicebot — Aarav", version="1.0.0")
+app = FastAPI(title="Sarvam Insurance Voicebot - Aarav", version="1.0.0")
 app.mount("/static", StaticFiles(directory=str(FRONTEND)), name="static")
 
-# Singletons — fine for the demo, would be a session pool in production
+# Singletons - fine for the demo, would be a session pool in production
 _sarvam = SarvamClient()
 _rag = BrochureRAG()
 _orchestrator = Orchestrator(_sarvam, _rag)
@@ -96,7 +96,7 @@ async def turn(
     if audio is not None:
         audio_bytes = await audio.read()
     elif text:
-        # Text fallback path — used for unit tests and the demo's "type instead" mode
+        # Text fallback path - used for unit tests and the demo's "type instead" mode
         return await _text_turn(session, text, language_hint, gender_pref, background_tasks)
     else:
         return JSONResponse({"error": "either `audio` file or `text` field required"}, status_code=400)
@@ -145,7 +145,7 @@ async def _text_turn(
     t_ret = time.time()
     snippets = []
     if session.state in (State.PITCH, State.QA, State.DISCOVERY):
-        # Same threshold as handle_turn — allow short conversational queries through.
+        # Same threshold as handle_turn - allow short conversational queries through.
         snippets = _rag.retrieve(text, k=3, min_score=1.5)
     retrieval_ms = int((time.time() - t_ret) * 1000)
 
@@ -236,10 +236,10 @@ def reset(session_id: str, background_tasks: BackgroundTasks) -> dict:
 
 @app.get("/api/test-email")
 def test_email() -> dict:
-    """Debug endpoint — fires a real email synchronously and returns the result.
+    """Debug endpoint - fires a real email synchronously and returns the result.
 
     Visit /api/test-email in the browser to confirm SMTP works from this host.
-    No auth required (harmless — sends to the configured NOTIFY_EMAIL only).
+    No auth required (harmless - sends to the configured NOTIFY_EMAIL only).
     """
     import os
     notify = os.getenv("NOTIFY_EMAIL", "")
@@ -288,7 +288,7 @@ def test_email() -> dict:
 def admin_sessions(token: str = Query(default="")) -> HTMLResponse:
     """Admin view of all recorded sessions. Requires ADMIN_TOKEN query param."""
     if not _ADMIN_TOKEN or token != _ADMIN_TOKEN:
-        return HTMLResponse("<h2>403 — invalid or missing token</h2>", status_code=403)
+        return HTMLResponse("<h2>403 - invalid or missing token</h2>", status_code=403)
 
     sessions = get_all_sessions(limit=100)
 
@@ -348,7 +348,7 @@ def admin_sessions(token: str = Query(default="")) -> HTMLResponse:
 </head><body>
 <div style="max-width:860px;margin:0 auto;">
   <h1>Aarav · Session Admin</h1>
-  <p class="sub">{len(sessions)} session(s) — newest first</p>
+  <p class="sub">{len(sessions)} session(s) - newest first</p>
   {rows if rows else '<p style="color:#8b95a6;">No sessions recorded yet.</p>'}
 </div>
 </body></html>"""
