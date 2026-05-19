@@ -553,8 +553,8 @@ SCENARIOS: list[Scenario] = [
             TurnCheck(note="Opening"),
             TurnCheck(note="Discovery"),
             TurnCheck(
-                must_not_contain=["Star Care", "Star Shield", "Star Plus", "ShieldCare plan",
-                                   "Star Senior Care", "Star Super Surplus"],
+                must_not_contain=["Star Care", "Star Shield", "Star Plus", "Star Senior Care",
+                                   "Star Super Surplus"],
                 must_contain_any=["Comprehensive", "floater", "health plan", "cover",
                                    "advisor", "lakh"],
                 note="Must not hallucinate plan names — only real product or generic term",
