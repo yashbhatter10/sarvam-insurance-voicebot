@@ -84,6 +84,7 @@ def session_start(session_id: str = Form(...), gender_pref: str = Form("male")) 
 
 @app.post("/api/turn")
 async def turn(
+    background_tasks: BackgroundTasks,
     session_id: str = Form(...),
     language_hint: str = Form("unknown"),
     gender_pref: str = Form("male"),
@@ -96,20 +97,40 @@ async def turn(
         audio_bytes = await audio.read()
     elif text:
         # Text fallback path — used for unit tests and the demo's "type instead" mode
-        audio_bytes = b""  # client.stt will fall through to mock or empty
-        # In text mode we bypass STT entirely
-        return await _text_turn(session, text, language_hint, gender_pref)
+        return await _text_turn(session, text, language_hint, gender_pref, background_tasks)
     else:
         return JSONResponse({"error": "either `audio` file or `text` field required"}, status_code=400)
 
     payload = _orchestrator.handle_turn(
         session, audio_bytes, language_hint=language_hint, gender_pref=gender_pref
     )
+    _maybe_email_on_handoff(session, background_tasks)
     return JSONResponse(payload)
 
 
+def _maybe_email_on_handoff(session: SessionMetrics, background_tasks: BackgroundTasks) -> None:
+    """Fire a session email the moment the conversation reaches HANDOFF or CLOSED state.
+
+    This runs server-side after every turn, so it does not depend on the user
+    closing the tab or clicking a reset button. Guards against duplicate emails
+    with a flag on the session object.
+    """
+    from app.agent.orchestrator import State
+    if session.state not in (State.HANDOFF, State.CLOSED):
+        return
+    if getattr(session, "_email_sent", False):
+        return  # already fired for this session
+    if not session.turns:
+        return
+    session._email_sent = True  # type: ignore[attr-defined]
+    data = build_session_data(session, ended_reason="handoff")
+    log_session(data)
+    background_tasks.add_task(send_session_email, data)
+
+
 async def _text_turn(
-    session: SessionMetrics, text: str, language_hint: str, gender_pref: str
+    session: SessionMetrics, text: str, language_hint: str, gender_pref: str,
+    background_tasks: Optional[BackgroundTasks] = None,
 ) -> JSONResponse:
     """Bypass STT for text-mode turns (typed input)."""
     from app.agent.orchestrator import State, TurnMetrics
@@ -167,6 +188,9 @@ async def _text_turn(
     )
     if guarded.triggered:
         session.escalation_reasons.extend(guarded.triggered)
+
+    if background_tasks is not None:
+        _maybe_email_on_handoff(session, background_tasks)
 
     return JSONResponse(
         {
