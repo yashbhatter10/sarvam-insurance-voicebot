@@ -3,7 +3,7 @@ Session logging + email notification for Aarav voicebot.
 
 Every completed session is:
   1. Written as a JSON file under logs/sessions/
-  2. Emailed to NOTIFY_EMAIL (if GMAIL_APP_PASSWORD is set in .env)
+  2. Emailed to NOTIFY_EMAIL via Resend API (HTTPS — works on HuggingFace Spaces)
 
 Admin view: GET /admin/sessions?token=<ADMIN_TOKEN>
 """
@@ -12,25 +12,19 @@ from __future__ import annotations
 import json
 import logging
 import os
-import smtplib
 import socket
 from datetime import datetime, timezone
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from pathlib import Path
 
 log = logging.getLogger(__name__)
 
 # ── Where logs are stored ──────────────────────────────────────────────────
-# /tmp works on HuggingFace Spaces; locally falls back to project-root/logs
-_BASE = Path(os.getenv("LOG_DIR", "logs")) / "sessions"
+_BASE = Path(os.getenv("LOG_DIR", "/tmp/aarav_sessions"))
 _BASE.mkdir(parents=True, exist_ok=True)
 
-
-# ── Email config (from .env) ───────────────────────────────────────────────
-_NOTIFY_EMAIL      = os.getenv("NOTIFY_EMAIL", "")          # who to notify
-_FROM_EMAIL        = os.getenv("GMAIL_FROM", _NOTIFY_EMAIL) # sender (same Gmail account)
-_GMAIL_APP_PASS    = os.getenv("GMAIL_APP_PASSWORD", "")    # 16-char app password
+# ── Email config (from .env / HF secrets) ─────────────────────────────────
+_NOTIFY_EMAIL  = os.getenv("NOTIFY_EMAIL", "")
+_RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 
 
 def log_session(session_data: dict) -> Path:
@@ -46,62 +40,55 @@ def log_session(session_data: dict) -> Path:
     return path
 
 
-def _smtp_587(from_addr: str, password: str, recipients: list, raw: str) -> None:
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as s:
-        s.ehlo(); s.starttls(); s.ehlo()
-        s.login(from_addr, password)
-        s.sendmail(from_addr, recipients, raw)
-
-
-def _smtp_465(from_addr: str, password: str, recipients: list, raw: str) -> None:
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as s:
-        s.login(from_addr, password)
-        s.sendmail(from_addr, recipients, raw)
-
-
 def send_startup_ping() -> None:
     """Fire a single test email on server boot so you know email is working."""
-    if not _NOTIFY_EMAIL or not _GMAIL_APP_PASS:
+    if not _NOTIFY_EMAIL or not _RESEND_API_KEY:
+        log.info("Startup ping skipped — NOTIFY_EMAIL or RESEND_API_KEY not set.")
         return
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "[Aarav] Space is live — email notifications active"
-    msg["From"]    = f"Aarav Voicebot <{_FROM_EMAIL}>"
-    msg["To"]      = _NOTIFY_EMAIL
-    body = "Aarav started up and email is working. You'll receive a session report after each conversation."
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-    for _send in [_smtp_587, _smtp_465]:
-        try:
-            _send(_FROM_EMAIL, _GMAIL_APP_PASS, [_NOTIFY_EMAIL], msg.as_string())
-            log.info("Startup ping sent → %s", _NOTIFY_EMAIL)
-            return
-        except Exception as e:
-            log.warning("Startup ping failed: %s", e)
+    _send_via_resend(
+        subject="[Aarav] Space is live — email notifications active",
+        html="<p>Aarav started up and email is working via Resend. You'll receive a session report after each conversation.</p>",
+        plain="Aarav started up and email is working via Resend.",
+    )
+    log.info("Startup ping sent → %s", _NOTIFY_EMAIL)
 
 
 def send_session_email(session_data: dict) -> bool:
-    """Send a session transcript email. Returns True if sent successfully."""
-    if not _NOTIFY_EMAIL or not _GMAIL_APP_PASS:
-        log.info("Email notification skipped — NOTIFY_EMAIL or GMAIL_APP_PASSWORD not set.")
+    """Send a session transcript email via Resend. Returns True if sent."""
+    if not _NOTIFY_EMAIL or not _RESEND_API_KEY:
+        log.info("Email skipped — NOTIFY_EMAIL or RESEND_API_KEY not set.")
         return False
-
     subject, plain, html = _build_email(session_data)
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"]    = f"Aarav Voicebot <{_FROM_EMAIL}>"
-    msg["To"]      = _NOTIFY_EMAIL
-    msg.attach(MIMEText(plain, "plain", "utf-8"))
-    msg.attach(MIMEText(html,  "html",  "utf-8"))
+    return _send_via_resend(subject=subject, html=html, plain=plain)
 
-    # Try port 587 (STARTTLS) first — allowed on most cloud hosts including HF Spaces.
-    # Fall back to port 465 (SSL) for environments that prefer it.
-    for attempt, _send in enumerate([_smtp_587, _smtp_465]):
-        try:
-            _send(_FROM_EMAIL, _GMAIL_APP_PASS, [_NOTIFY_EMAIL], msg.as_string())
-            log.info("Session email sent → %s (attempt %d)", _NOTIFY_EMAIL, attempt + 1)
+
+def _send_via_resend(*, subject: str, html: str, plain: str) -> bool:
+    """Send email via Resend REST API (HTTPS — never blocked by HF Spaces)."""
+    import httpx
+    try:
+        resp = httpx.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {_RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "Aarav Voicebot <onboarding@resend.dev>",
+                "to": [_NOTIFY_EMAIL],
+                "subject": subject,
+                "html": html,
+                "text": plain,
+            },
+            timeout=15.0,
+        )
+        if resp.status_code in (200, 201):
+            log.info("Email sent via Resend → %s", _NOTIFY_EMAIL)
             return True
-        except Exception as e:
-            log.warning("Email attempt %d failed: %s", attempt + 1, e)
-    return False
+        log.warning("Resend returned %d: %s", resp.status_code, resp.text[:200])
+        return False
+    except Exception as e:
+        log.error("Resend call failed: %s", e)
+        return False
 
 
 def get_all_sessions(limit: int = 50) -> list[dict]:
@@ -132,7 +119,6 @@ def _build_email(s: dict) -> tuple[str, str, str]:
 
     subject = f"[Aarav] New session — {turns} turns · {state} · {ts[:16]}"
 
-    # Plain text
     lines = [
         f"Session: {session_id}",
         f"Time:    {ts}",
@@ -144,16 +130,15 @@ def _build_email(s: dict) -> tuple[str, str, str]:
         "",
     ]
     if guardrails:
-        lines.append(f"⚠ Guardrails triggered: {', '.join(guardrails)}")
+        lines.append(f"Guardrails triggered: {', '.join(guardrails)}")
     if escalations:
-        lines.append(f"→ Escalated: {', '.join(escalations)}")
+        lines.append(f"Escalated: {', '.join(escalations)}")
     lines += ["", "── TRANSCRIPT ──", ""]
     for turn in transcript:
         role = "Customer" if turn["role"] == "user" else "Aarav   "
         lines.append(f"{role}: {turn['content']}")
     plain = "\n".join(lines)
 
-    # HTML
     tr_rows = ""
     for turn in transcript:
         is_bot  = turn["role"] == "assistant"
@@ -216,8 +201,6 @@ def _esc(s: object) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-# ── Assemble the session_data dict to log / email ──────────────────────────
-
 def build_session_data(session, ended_reason: str = "reset") -> dict:
     """Build the dict we log + email from a SessionMetrics object."""
     summary = session.summary()
@@ -233,12 +216,11 @@ def build_session_data(session, ended_reason: str = "reset") -> dict:
         "latency_p95_ms":    summary.get("latency_p95_ms"),
         "guardrail_triggers":summary.get("guardrail_triggers", []),
         "escalations":       summary.get("escalations", []),
-        "transcript":        session.history,   # list of {role, content}
+        "transcript":        session.history,
     }
 
 
 def _get_host() -> str:
-    """Best-effort: return HuggingFace Space name or local hostname."""
     hf = os.getenv("SPACE_ID") or os.getenv("SPACE_HOST")
     if hf:
         return f"HuggingFace · {hf}"
