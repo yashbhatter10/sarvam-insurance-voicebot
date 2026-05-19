@@ -1,7 +1,7 @@
 """
 RAG over the insurance brochure.
 
-Lightweight, dependency-free retrieval — uses character-overlap scoring plus
+Lightweight, dependency-free retrieval - uses character-overlap scoring plus
 keyword bonuses. This is intentional: for a brochure split into ~203 snippets
 across 17 sections, a simple BM25-ish scorer is faster, deterministic, and
 easier to audit than spinning up sentence-transformers / FAISS.
@@ -85,7 +85,7 @@ def _split_into_snippets(raw: str) -> List[Snippet]:
             current_section = re.sub(r"\s*\(.+\)$", "", current_section).strip()
 
             # Salvage content that is merged into the same block as the header.
-            # The header structure is: ----\nSECTION N — NAME\n----\n[content]
+            # The header structure is: ----\nSECTION N - NAME\n----\n[content]
             # Split on ---- dividers; everything after the 2nd divider is content.
             parts = _DIVIDER_RE.split(block)
             # parts[0] = "" (before first ----), parts[1] = section name line,
@@ -165,7 +165,7 @@ class BrochureRAG:
     def format_for_prompt(self, snippets: list[Snippet]) -> str:
         """Format snippets for injection into the LLM system prompt.
 
-        IDs are intentionally excluded here — the LLM doesn't need them and
+        IDs are intentionally excluded here - the LLM doesn't need them and
         will occasionally echo citation tags like [s57_00] verbatim into its
         reply, which TTS then reads aloud. The UI source citations use the
         original Snippet objects directly, so nothing is lost.
