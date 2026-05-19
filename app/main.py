@@ -230,11 +230,43 @@ def reset(session_id: str, background_tasks: BackgroundTasks) -> dict:
     if session and session.turns:
         data = build_session_data(session, ended_reason="reset")
         log_session(data)
-        # Send email in background so the endpoint returns immediately —
-        # critical on HF free tier where the container can be killed before
-        # a synchronous SMTP call completes.
         background_tasks.add_task(send_session_email, data)
     return {"ok": True}
+
+
+@app.get("/api/test-email")
+def test_email() -> dict:
+    """Debug endpoint — fires a real email synchronously and returns the result.
+
+    Visit /api/test-email in the browser to confirm SMTP works from this host.
+    No auth required (harmless — sends to the configured NOTIFY_EMAIL only).
+    """
+    import os
+    notify = os.getenv("NOTIFY_EMAIL", "")
+    gmail_from = os.getenv("GMAIL_FROM", notify)
+    password = os.getenv("GMAIL_APP_PASSWORD", "")
+    if not notify or not password:
+        return {"ok": False, "reason": "NOTIFY_EMAIL or GMAIL_APP_PASSWORD not set"}
+
+    dummy_data = {
+        "session_id": "test-debug",
+        "ended_at": "2026-01-01T00:00:00",
+        "ended_reason": "test",
+        "host": "hf-space-test",
+        "turns": 1,
+        "final_state": "test",
+        "languages": ["en-IN"],
+        "latency_p50_ms": 0,
+        "latency_p95_ms": 0,
+        "guardrail_triggers": [],
+        "escalations": [],
+        "transcript": [
+            {"role": "user", "content": "This is a test conversation turn."},
+            {"role": "assistant", "content": "Test reply from Aarav."},
+        ],
+    }
+    ok = send_session_email(dummy_data)
+    return {"ok": ok, "sent_to": notify, "from": gmail_from}
 
 
 @app.get("/admin/sessions", response_class=HTMLResponse)
