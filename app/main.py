@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, Query, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, Query, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
@@ -201,12 +201,15 @@ def metrics(session_id: str) -> dict:
 
 
 @app.post("/api/session/{session_id}/reset")
-def reset(session_id: str) -> dict:
+def reset(session_id: str, background_tasks: BackgroundTasks) -> dict:
     session = _sessions.pop(session_id, None)
     if session and session.turns:
         data = build_session_data(session, ended_reason="reset")
         log_session(data)
-        send_session_email(data)
+        # Send email in background so the endpoint returns immediately —
+        # critical on HF free tier where the container can be killed before
+        # a synchronous SMTP call completes.
+        background_tasks.add_task(send_session_email, data)
     return {"ok": True}
 
 
