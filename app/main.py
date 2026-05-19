@@ -243,10 +243,9 @@ def test_email() -> dict:
     """
     import os
     notify = os.getenv("NOTIFY_EMAIL", "")
-    gmail_from = os.getenv("GMAIL_FROM", notify)
-    password = os.getenv("GMAIL_APP_PASSWORD", "")
-    if not notify or not password:
-        return {"ok": False, "reason": "NOTIFY_EMAIL or GMAIL_APP_PASSWORD not set"}
+    resend_key = os.getenv("RESEND_API_KEY", "")
+    if not notify or not resend_key:
+        return {"ok": False, "reason": "NOTIFY_EMAIL or RESEND_API_KEY not set"}
 
     dummy_data = {
         "session_id": "test-debug",
@@ -265,35 +264,24 @@ def test_email() -> dict:
             {"role": "assistant", "content": "Test reply from Aarav."},
         ],
     }
-    # Try SMTP directly and capture the exact error
-    import smtplib
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-    errors = {}
-    msg = MIMEMultipart()
-    msg["Subject"] = "[Aarav] SMTP debug test"
-    msg["From"] = gmail_from
-    msg["To"] = notify
-    msg.attach(MIMEText("SMTP debug test from HF Space.", "plain", "utf-8"))
-    raw = msg.as_string()
-
-    for port, method in [("587_starttls", None), ("465_ssl", None)]:
-        try:
-            if "587" in port:
-                with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as s:
-                    s.ehlo(); s.starttls(); s.ehlo()
-                    s.login(gmail_from, password)
-                    s.sendmail(gmail_from, [notify], raw)
-                return {"ok": True, "method": port, "sent_to": notify}
-            else:
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as s:
-                    s.login(gmail_from, password)
-                    s.sendmail(gmail_from, [notify], raw)
-                return {"ok": True, "method": port, "sent_to": notify}
-        except Exception as e:
-            errors[port] = f"{type(e).__name__}: {e}"
-
-    return {"ok": False, "errors": errors, "sent_to": notify}
+    ok = send_session_email({
+        "session_id": "test-debug",
+        "ended_at": "2026-01-01T00:00:00",
+        "ended_reason": "test",
+        "host": "hf-space-test",
+        "turns": 1,
+        "final_state": "test",
+        "languages": ["en-IN"],
+        "latency_p50_ms": 0,
+        "latency_p95_ms": 0,
+        "guardrail_triggers": [],
+        "escalations": [],
+        "transcript": [
+            {"role": "user", "content": "Test turn."},
+            {"role": "assistant", "content": "Test reply."},
+        ],
+    })
+    return {"ok": ok, "sent_to": notify}
 
 
 @app.get("/admin/sessions", response_class=HTMLResponse)
