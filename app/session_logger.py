@@ -3,7 +3,7 @@ Session logging + email notification for Aarav voicebot.
 
 Every completed session is:
   1. Written as a JSON file under logs/sessions/
-  2. Emailed to NOTIFY_EMAIL via Resend API (HTTPS — works on HuggingFace Spaces)
+  2. Emailed to NOTIFY_EMAIL via Resend API (HTTPS - works on HuggingFace Spaces)
 
 Admin view: GET /admin/sessions?token=<ADMIN_TOKEN>
 """
@@ -43,10 +43,10 @@ def log_session(session_data: dict) -> Path:
 def send_startup_ping() -> None:
     """Fire a single test email on server boot so you know email is working."""
     if not _NOTIFY_EMAIL or not _RESEND_API_KEY:
-        log.info("Startup ping skipped — NOTIFY_EMAIL or RESEND_API_KEY not set.")
+        log.info("Startup ping skipped - NOTIFY_EMAIL or RESEND_API_KEY not set.")
         return
     _send_via_resend(
-        subject="[Aarav] Space is live — email notifications active",
+        subject="[Aarav] Space is live - email notifications active",
         html="<p>Aarav started up and email is working via Resend. You'll receive a session report after each conversation.</p>",
         plain="Aarav started up and email is working via Resend.",
     )
@@ -56,14 +56,14 @@ def send_startup_ping() -> None:
 def send_session_email(session_data: dict) -> bool:
     """Send a session transcript email via Resend. Returns True if sent."""
     if not _NOTIFY_EMAIL or not _RESEND_API_KEY:
-        log.info("Email skipped — NOTIFY_EMAIL or RESEND_API_KEY not set.")
+        log.info("Email skipped - NOTIFY_EMAIL or RESEND_API_KEY not set.")
         return False
     subject, plain, html = _build_email(session_data)
     return _send_via_resend(subject=subject, html=html, plain=plain)
 
 
 def _send_via_resend(*, subject: str, html: str, plain: str) -> bool:
-    """Send email via Resend REST API (HTTPS — never blocked by HF Spaces)."""
+    """Send email via Resend REST API (HTTPS - never blocked by HF Spaces)."""
     import httpx
     try:
         resp = httpx.post(
@@ -117,7 +117,7 @@ def _build_email(s: dict) -> tuple[str, str, str]:
     transcript = s.get("transcript", [])
     host       = s.get("host", "—")
 
-    subject = f"[Aarav] New session — {turns} turns · {state} · {ts[:16]}"
+    subject = f"[Aarav] New session - {turns} turns · {state} · {ts[:16]}"
 
     lines = [
         f"Session: {session_id}",
