@@ -623,10 +623,10 @@ async function init() {
 init();
 
 // ─── Auto-log session when tab is closed / page refreshed ─────────
-// sendBeacon fires reliably even during unload — unlike fetch() which
-// gets cancelled. The server only emails if the session has actual turns.
+// fetch with keepalive:true survives tab close (same guarantee as sendBeacon
+// but more reliably handled by proxied/container environments like HF Spaces).
 window.addEventListener("beforeunload", () => {
-  navigator.sendBeacon(`/api/session/${SESSION_ID}/reset`);
+  fetch(`/api/session/${SESSION_ID}/reset`, { method: "POST", keepalive: true }).catch(() => {});
 });
 </script>
 </body>
