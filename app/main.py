@@ -265,8 +265,35 @@ def test_email() -> dict:
             {"role": "assistant", "content": "Test reply from Aarav."},
         ],
     }
-    ok = send_session_email(dummy_data)
-    return {"ok": ok, "sent_to": notify, "from": gmail_from}
+    # Try SMTP directly and capture the exact error
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    errors = {}
+    msg = MIMEMultipart()
+    msg["Subject"] = "[Aarav] SMTP debug test"
+    msg["From"] = gmail_from
+    msg["To"] = notify
+    msg.attach(MIMEText("SMTP debug test from HF Space.", "plain", "utf-8"))
+    raw = msg.as_string()
+
+    for port, method in [("587_starttls", None), ("465_ssl", None)]:
+        try:
+            if "587" in port:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as s:
+                    s.ehlo(); s.starttls(); s.ehlo()
+                    s.login(gmail_from, password)
+                    s.sendmail(gmail_from, [notify], raw)
+                return {"ok": True, "method": port, "sent_to": notify}
+            else:
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as s:
+                    s.login(gmail_from, password)
+                    s.sendmail(gmail_from, [notify], raw)
+                return {"ok": True, "method": port, "sent_to": notify}
+        except Exception as e:
+            errors[port] = f"{type(e).__name__}: {e}"
+
+    return {"ok": False, "errors": errors, "sent_to": notify}
 
 
 @app.get("/admin/sessions", response_class=HTMLResponse)
