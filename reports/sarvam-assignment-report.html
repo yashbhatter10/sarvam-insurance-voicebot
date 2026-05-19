@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Sarvam CS Round 2 — Yashwardhan Bhatter</title>
+<title>Sarvam CS Round 2 - Yashwardhan Bhatter</title>
 <style>
   :root {
     --ink: #0e1116;
@@ -84,7 +84,7 @@
 <!-- ============= COVER ============= -->
 <div class="cover">
   <div class="tag">Sarvam AI · Customer Success · Round 2 Assignment</div>
-  <h1>Building an Indic voicebot the way a Sarvam customer would — and what that says about Sarvam's position in India's AI market</h1>
+  <h1>Building an Indic voicebot the way a Sarvam customer would - and what that says about Sarvam's position in India's AI market</h1>
   <div class="by">
     Yashwardhan Bhatter · yashwardhanbhatter.22@micamail.in · 15 May 2026<br/>
     Assignment author: Anand Chaurasia · Submission deadline: 18 May 2026
@@ -94,28 +94,28 @@
 <div class="tldr">
   <h3>TL;DR</h3>
   <ul>
-    <li><b>Part 1 chosen:</b> Option 2 — Insurance Sales Voicebot. Built end-to-end on Sarvam's developer stack and hosted on a public URL that opens in any browser. The link is in the submission email; open in Chrome, click the mic, talk to Aarav.</li>
-    <li><b>Architecture:</b> Saaras v3 (STT, auto-detect 22 Indian languages) → BM25-style RAG over a 6-section ShieldCare brochure → Sarvam-30B (LLM, voice-tuned system prompt modeled on a GreyLabs production reference) → Bulbul v3 (TTS, anand voice). Compliance post-filters catch and rewrite premium quotes, claim promises, sensitive-data requests, tax / medical / investment advice, competitor comparisons, unofficial channel promises, AI self-disclosure, and brochure-violating rider offers. A parallel <code>agents/livekit_agent.py</code> shows the same agent expressed on Sarvam's official LiveKit plugin path — the production migration story.</li>
+    <li><b>Part 1 chosen:</b> Option 2 - Insurance Sales Voicebot. Built end-to-end on Sarvam's developer stack and hosted on a public URL that opens in any browser. The link is in the submission email; open in Chrome, click the mic, talk to Aarav.</li>
+    <li><b>Architecture:</b> Saaras v3 (STT, auto-detect 22 Indian languages) → BM25-style RAG over a 17-section Star Health brochure (203 snippets) → Gemini 2.5 Flash (LLM, voice-tuned system prompt) → Bulbul v3 (TTS, anand voice). Compliance post-filters catch and rewrite premium quotes, claim promises, sensitive-data requests, tax / medical / investment advice, competitor comparisons, unofficial channel promises, AI self-disclosure, and brochure-violating rider offers. A parallel <code>agents/livekit_agent.py</code> shows the same agent expressed on Sarvam's official LiveKit plugin path - the production migration story.</li>
     <li><b>Voicebot depth covered:</b> latency budget (p50 ~1.1s, p95 ~1.6s on the hosted dev stack; &lt;500ms achievable via LiveKit + WebSocket streaming), voice-first system prompt (no markdown, spoken-form numbers, one-question-per-turn, designed disfluency), multilingual auto-detect via Saaras (English / Hindi / Hinglish handled natively), Bulbul voice + pace design, STT-uncertainty repair, barge-in, IRDAI-aware refusal patterns, and CS-style session analytics (containment, latency p95, RAG no-answer rate, escalation reasons, language distribution).</li>
-    <li><b>Part 2:</b> India's sovereign-AI bet is the right bet, and Sarvam is the company positioned closest to its bullseye — Indic-first, voice-first, full-stack, sovereign-LLM grant recipient, with an open-weight Apache 2.0 release of Sarvam-30B and Sarvam-105B in March 2026, and a freshly announced multi-product deployment at SBI Life covering eight crore customers. The defensible moats are voice and applications; the foundation-model layer will eventually commoditise. Main risk is enterprise GTM execution at scale.</li>
-    <li><b>For Sarvam CS:</b> the highest-leverage thing this role does is translate buyer outcomes into Sarvam's specific product surface — which Samvaad config, which deployment mode, which compliance guardrail — and feed the gaps back to product. This assignment is my attempt to demonstrate that I can do that.</li>
+    <li><b>Part 2:</b> India's sovereign-AI bet is the right bet, and Sarvam is the company positioned closest to its bullseye - Indic-first, voice-first, full-stack, sovereign-LLM grant recipient, with an open-weight Apache 2.0 release of Sarvam-30B and Sarvam-105B in March 2026, and a freshly announced multi-product deployment at SBI Life covering eight crore customers. The defensible moats are voice and applications; the foundation-model layer will eventually commoditise. Main risk is enterprise GTM execution at scale.</li>
+    <li><b>For Sarvam CS:</b> the highest-leverage thing this role does is translate buyer outcomes into Sarvam's specific product surface - which Samvaad config, which deployment mode, which compliance guardrail - and feed the gaps back to product. This assignment is my attempt to demonstrate that I can do that.</li>
   </ul>
 </div>
 
 <div class="toc">
   <h4>Contents</h4>
   <ol>
-    <li>Part 1 · The voicebot — route decision and architecture</li>
-    <li>Voicebot depth — latency, prompt, voice, barge-in, guardrails, analytics</li>
+    <li>Part 1 · The voicebot - route decision and architecture</li>
+    <li>Voicebot depth - latency, prompt, voice, barge-in, guardrails, analytics</li>
     <li>Sarvam product mapping</li>
     <li>Briefly: Options 1 and 3</li>
     <li>Part 2 · Market research thesis: AI in India and Sarvam's position</li>
-    <li>Appendix — repo map, setup, sources</li>
+    <li>Appendix - repo map, setup, sources</li>
   </ol>
 </div>
 
 <!-- ============= PART 1 ============= -->
-<h2>1. Part 1 · The voicebot — route decision and architecture</h2>
+<h2>1. Part 1 · The voicebot - route decision and architecture</h2>
 
 <h3>1.1 Sarvam's actual surface for "build a voicebot"</h3>
 <p>Three honest routes, not equivalent in any way that matters:</p>
@@ -130,7 +130,7 @@
   <tr>
     <td><b>Sarvam Samvaad</b></td>
     <td>Enterprise conversational-agent platform. Voice + WhatsApp + Web + in-app. KB, telephony, multi-agent orchestration, analytics, CRM integration. &lt;500 ms latency. 11 languages. Deploys in &lt;24 hrs via forward-deployed engineer. Production customer: Tata Capital.</td>
-    <td>No — Contact Sales.</td>
+    <td>No - Contact Sales.</td>
     <td>This is what I'd recommend to a real customer like Bajaj Allianz. Not realistic for a 3-day candidate task.</td>
   </tr>
   <tr>
@@ -148,7 +148,7 @@
 </table>
 
 <div class="callout">
-  <b>CS framing:</b> "any API" was on the table per the brief, but the developer-stack route is the strongest demonstration of voice-AI depth — the build exercises every layer Sarvam ships. Samvaad is the route I'd take a real HDFC Life or SBI Life deployment down; for this exercise the developer-stack build is the right scope because it shows I can articulate every part of the pipeline a CSM has to explain to a customer's technical team.
+  <b>CS framing:</b> "any API" was on the table per the brief, but the developer-stack route is the strongest demonstration of voice-AI depth - the build exercises every layer Sarvam ships. Samvaad is the route I'd take a real HDFC Life or SBI Life deployment down; for this exercise the developer-stack build is the right scope because it shows I can articulate every part of the pipeline a CSM has to explain to a customer's technical team.
 </div>
 
 <h3>1.2 Architecture</h3>
@@ -166,7 +166,7 @@
                   ├─▶ Guardrails (claim-promise / premium-quote / tax / medical post-filters)
                   └─▶ Sarvam TTS (Bulbul v3, voice+pace from voice_design.py)</pre>
 
-<p>The production-migration exhibit is <code>agents/livekit_agent.py</code> — 80 lines, runs Aarav on LiveKit with Sarvam's plugin, with the four flags Sarvam's docs call out explicitly: <code>flush_signal=True</code>, <code>turn_detection="stt"</code>, <code>min_endpointing_delay=0.07</code>, and no <code>vad=</code> on <code>AgentSession</code>.</p>
+<p>The production-migration exhibit is <code>agents/livekit_agent.py</code> - 80 lines, runs Aarav on LiveKit with Sarvam's plugin, with the four flags Sarvam's docs call out explicitly: <code>flush_signal=True</code>, <code>turn_detection="stt"</code>, <code>min_endpointing_delay=0.07</code>, and no <code>vad=</code> on <code>AgentSession</code>.</p>
 
 <h2>2. Voicebot depth</h2>
 
@@ -178,29 +178,29 @@
   <tr><th>Stage</th><th>Target</th><th>Sarvam capability</th></tr>
   <tr><td>End-of-speech detection</td><td>50-100 ms</td><td>Sarvam STT plugin emits start/end-of-speech events. <code>min_endpointing_delay=0.07</code> in LiveKit.</td></tr>
   <tr><td>STT (streaming Saaras v3)</td><td>150-250 ms</td><td>~70 ms processing latency. WebSocket streaming available since Jun 2025.</td></tr>
-  <tr><td>RAG retrieval</td><td>50-150 ms</td><td>Local BM25-ish over 30 snippets — sub-100 ms easy.</td></tr>
+  <tr><td>RAG retrieval</td><td>50-150 ms</td><td>Local BM25-ish over 30 snippets - sub-100 ms easy.</td></tr>
   <tr><td>LLM first-token</td><td>300-500 ms</td><td>Streaming <code>chat.completions</code>.</td></tr>
   <tr><td>TTS first-audio (Bulbul v3)</td><td>200-400 ms</td><td>WebSocket streaming since Jun 2025. 24 kHz default; 8/16/22/24/32/44/48 kHz supported.</td></tr>
-  <tr><td><b>Total time-to-first-audio</b></td><td><b>~750-1300 ms</b></td><td>Within ~2× of Samvaad's &lt;500 ms benchmark on the dev stack — acceptable for a demo, and the report's honest about it.</td></tr>
+  <tr><td><b>Total time-to-first-audio</b></td><td><b>~750-1300 ms</b></td><td>Within ~2× of Samvaad's &lt;500 ms benchmark on the dev stack - acceptable for a demo, and the report's honest about it.</td></tr>
 </table>
 
 <p>The UI surfaces a stacked latency bar per turn so the interviewer can see exactly where time is spent.</p>
 
 <h3>2.2 Conversation design</h3>
 
-<p>The flow is a 7-state machine implemented in <code>app/agent/orchestrator.py</code>. Greeting → Discovery (3-5 short turns) → Pitch (one product, one reason, one cited feature) → Q&amp;A (RAG-grounded, citations shown in UI) → Next-Steps / Handoff. Objection Repair is reachable from any state. Each state has an explicit purpose; transitions are decided per-turn from the user's intent. Crucially, the LLM does the language work — the state machine exists for metrics, pace control, and handoff capture, not for natural-language understanding.</p>
+<p>The flow is a 7-state machine implemented in <code>app/agent/orchestrator.py</code>. Greeting → Discovery (3-5 short turns) → Pitch (one product, one reason, one cited feature) → Q&amp;A (RAG-grounded, citations shown in UI) → Next-Steps / Handoff. Objection Repair is reachable from any state. Each state has an explicit purpose; transitions are decided per-turn from the user's intent. Crucially, the LLM does the language work - the state machine exists for metrics, pace control, and handoff capture, not for natural-language understanding.</p>
 
 <h3>2.3 The prompt</h3>
 
 <p>The single most consequential design decision is the prompt's first three lines:</p>
 
-<blockquote>"You are on a VOICE call — your text will be read aloud by a text-to-speech engine. Use short sentences. Avoid lists, markdown, headers, asterisks, code, parentheses, or numbers in digit form (write 'ten lakh', not '10,00,000'). Maximum 2-3 sentences per reply. Ask one question at a time. Never two."</blockquote>
+<blockquote>"You are on a VOICE call - your text will be read aloud by a text-to-speech engine. Use short sentences. Avoid lists, markdown, headers, asterisks, code, parentheses, or numbers in digit form (write 'ten lakh', not '10,00,000'). Maximum 2-3 sentences per reply. Ask one question at a time. Never two."</blockquote>
 
 <p>Most "voicebot" prompts in the wild are reskinned chatbot prompts and produce TTS-hostile output (bullet lists with asterisks, parentheticals, ₹10,00,000 read as "rupees one zero comma zero zero comma zero zero zero"). Telling the LLM the output channel changes its behaviour materially.</p>
 
 <h3>2.4 Voice and pace selection</h3>
 
-<p>Bulbul v3 ships 37 voices across 11 languages. The default for Aarav is <code>anand</code> — warm, mid-pitch male, sounds 30s, not too corporate. The UI exposes a male/female toggle (Priya / Simran on the female side). Pace defaults to 1.0; the orchestrator drops to 0.9 when reading policy details (numbers, terms, exclusions) so users can follow. Voice identity is preserved across language switches — Anand answers in English, Hindi, or Hinglish without character change.</p>
+<p>Bulbul v3 ships 37 voices across 11 languages. The default for Aarav is <code>anand</code> - warm, mid-pitch male, sounds 30s, not too corporate. The UI exposes a male/female toggle (Priya / Simran on the female side). Pace defaults to 1.0; the orchestrator drops to 0.9 when reading policy details (numbers, terms, exclusions) so users can follow. Voice identity is preserved across language switches - Anand answers in English, Hindi, or Hinglish without character change.</p>
 
 <h3>2.5 Multilingual / Hinglish</h3>
 
@@ -208,11 +208,11 @@
 
 <h3>2.6 Barge-in &amp; turn-taking</h3>
 
-<p>The browser keeps the mic stream live while TTS is playing. A new user start-of-speech event pauses the <code>&lt;audio&gt;</code> element, cancels pending TTS generation, and treats the new utterance as the next turn. In the LiveKit production variant, this is handled by Sarvam STT's turn-detection signal — the configuration is one line: <code>AgentSession(turn_detection="stt", min_endpointing_delay=0.07)</code>. No separate VAD model. (Sarvam's docs explicitly say: do not pass <code>vad=</code> to AgentSession.)</p>
+<p>The browser keeps the mic stream live while TTS is playing. A new user start-of-speech event pauses the <code>&lt;audio&gt;</code> element, cancels pending TTS generation, and treats the new utterance as the next turn. In the LiveKit production variant, this is handled by Sarvam STT's turn-detection signal - the configuration is one line: <code>AgentSession(turn_detection="stt", min_endpointing_delay=0.07)</code>. No separate VAD model. (Sarvam's docs explicitly say: do not pass <code>vad=</code> to AgentSession.)</p>
 
 <h3>2.7 STT uncertainty repair</h3>
 
-<p>When Saaras returns confidence below ~0.7, Aarav repairs explicitly: "<i>I caught 'family floater' but the second part wasn't clear — could you say it again?</i>" This avoids the failure mode where the bot confidently answers the wrong question — the highest-cost error in insurance sales.</p>
+<p>When Saaras returns confidence below ~0.7, Aarav repairs explicitly: "<i>I caught 'family floater' but the second part wasn't clear - could you say it again?</i>" This avoids the failure mode where the bot confidently answers the wrong question - the highest-cost error in insurance sales.</p>
 
 <h3>2.8 Compliance guardrails</h3>
 
@@ -220,26 +220,26 @@
 
 <table>
   <tr><th>Hard rule</th><th>What the bot says instead</th></tr>
-  <tr><td>Never quote a final premium</td><td>"Honest answer — depends on age and a few health questions. For a family like yours we usually see fifteen to twenty-five thousand a year. The advisor will run the actual quote."</td></tr>
-  <tr><td>Never promise claim approval</td><td>"Claims go through underwriting and waiting periods — the claims team makes the final call. I can flag your case for our advisor."</td></tr>
+  <tr><td>Never quote a final premium</td><td>"Honest answer - depends on age and a few health questions. For a family like yours we usually see fifteen to twenty-five thousand a year. The advisor will run the actual quote."</td></tr>
+  <tr><td>Never promise claim approval</td><td>"Claims go through underwriting and waiting periods - the claims team makes the final call. I can flag your case for our advisor."</td></tr>
   <tr><td>Never hide exclusions on direct ask</td><td>Reads the relevant exclusion from the brochure.</td></tr>
-  <tr><td>No tax / legal / medical / investment advice</td><td>"I can't advise on tax — your CA can confirm 80D and 80C, and our advisor can answer the policy-specific bit."</td></tr>
+  <tr><td>No tax / legal / medical / investment advice</td><td>"I can't advise on tax - your CA can confirm 80D and 80C, and our advisor can answer the policy-specific bit."</td></tr>
   <tr><td>No final purchase without advisor</td><td>Always routes to handoff before close.</td></tr>
 </table>
 
-<p>Every factual policy answer is grounded in a brochure snippet (shown as a "Source" card in the UI). The orchestrator tracks how often retrieval returns nothing useful — the <code>rag_no_answer_rate</code> metric is what a CSM would walk a Bajaj pilot through to identify gaps in the customer's KB.</p>
+<p>Every factual policy answer is grounded in a brochure snippet (shown as a "Source" card in the UI). The orchestrator tracks how often retrieval returns nothing useful - the <code>rag_no_answer_rate</code> metric is what a CSM would walk a Bajaj pilot through to identify gaps in the customer's KB.</p>
 
 <h3>2.9 CS-style analytics (the differentiator)</h3>
 
 <p>The right-side panel in the demo shows session-level metrics a CSM would actually use:</p>
 
 <div class="grid-3">
-  <div class="card"><div class="num-label">Containment</div><div class="num-big">—</div><span class="footnote">% of sessions Aarav handled end-to-end without escalation</span></div>
-  <div class="card"><div class="num-label">Latency p95</div><div class="num-big">—</div><span class="footnote">95th-percentile time-to-first-audio across the session</span></div>
-  <div class="card"><div class="num-label">RAG no-answer</div><div class="num-big">—</div><span class="footnote">% of policy Q&amp;A turns where retrieval returned nothing useful — surfaces KB gaps to the customer</span></div>
+  <div class="card"><div class="num-label">Containment</div><div class="num-big">-</div><span class="footnote">% of sessions Aarav handled end-to-end without escalation</span></div>
+  <div class="card"><div class="num-label">Latency p95</div><div class="num-big">-</div><span class="footnote">95th-percentile time-to-first-audio across the session</span></div>
+  <div class="card"><div class="num-label">RAG no-answer</div><div class="num-big">-</div><span class="footnote">% of policy Q&amp;A turns where retrieval returned nothing useful - surfaces KB gaps to the customer</span></div>
 </div>
 
-<p style="margin-top:8px;">Plus: escalation reasons, language distribution, guardrail-trigger counts, STT correction rate, barge-in frequency. These are the same numbers a Samvaad CSM would report in a weekly customer review for a Bajaj or HDFC Life pilot — the metric set transfers directly.</p>
+<p style="margin-top:8px;">Plus: escalation reasons, language distribution, guardrail-trigger counts, STT correction rate, barge-in frequency. These are the same numbers a Samvaad CSM would report in a weekly customer review for a Bajaj or HDFC Life pilot - the metric set transfers directly.</p>
 
 <h2>3. Sarvam product mapping</h2>
 
@@ -249,49 +249,49 @@
   <tr><th>Sarvam product / model</th><th>Role in this build</th><th>Production migration role</th></tr>
   <tr><td><b>Saaras v3</b> (STT, 22 languages)</td><td>Speech-to-text on each user turn. <code>mode=transcribe</code>, <code>language="unknown"</code> for auto-detect.</td><td>Same. Add <code>flush_signal=True</code> for clean turn boundaries in streaming mode.</td></tr>
   <tr><td><b>Bulbul v3</b> (TTS, 11 languages, 37 voices)</td><td>Aarav's voice. Default <code>anand</code>, pace 1.0; UI lets the demo flip to <code>priya</code> / <code>simran</code> female options.</td><td>WebSocket streaming + 8 kHz output for telephony.</td></tr>
-  <tr><td><b>Sarvam-30B / Sarvam-105B / Sarvam-M</b></td><td>LLM. Default <code>sarvam-m</code> for compatibility; swap to <code>sarvam-30b</code> / <code>sarvam-105b</code> in <code>app/sarvam_client.py</code> one line.</td><td>30B for cost-sensitive workloads, 105B for high-stakes B2B.</td></tr>
+  <tr><td><b>Gemini 2.5 Flash</b></td><td>LLM. Called via OpenAI-compatible REST endpoint in <code>app/sarvam_client.py</code>. Hot-swappable - one line change to use any model.</td><td>1M context window, fast (~500ms), no token-limit issues across long sessions.</td></tr>
   <tr><td><b>Sarvam Vision</b> / <b>Akshar</b></td><td>Not used in this demo (brochure is plain text).</td><td>Production: digitise scanned policy PDFs, extract tables of exclusions and benefits into structured KB.</td></tr>
-  <tr><td><b>Sarvam Translate</b> / <b>Mayura</b></td><td>Not used directly — Saaras translate-mode handles the runtime translation case.</td><td>Production: translate the policy brochure itself into 22 languages so the same KB serves every region.</td></tr>
-  <tr><td><b>Sarvam Samvaad</b></td><td>The enterprise route I'd recommend a real Bajaj / HDFC pilot move to — not built here.</td><td>Whole-stack replacement: managed agent + KB + telephony + analytics + CRM. &lt;500 ms latency, on-prem option.</td></tr>
+  <tr><td><b>Sarvam Translate</b> / <b>Mayura</b></td><td>Not used directly - Saaras translate-mode handles the runtime translation case.</td><td>Production: translate the policy brochure itself into 22 languages so the same KB serves every region.</td></tr>
+  <tr><td><b>Sarvam Samvaad</b></td><td>The enterprise route I'd recommend a real Bajaj / HDFC pilot move to - not built here.</td><td>Whole-stack replacement: managed agent + KB + telephony + analytics + CRM. &lt;500 ms latency, on-prem option.</td></tr>
   <tr><td><b>Sarvam Arya</b></td><td>Not used (Arya is for back-office workflow agents, not customer-facing voice).</td><td>Production-adjacent: Arya runs the claims-processing or KYC-review agent that picks up where Aarav hands off.</td></tr>
   <tr><td><b>Sarvam Studio</b></td><td>Not used.</td><td>Production: dub the customer-facing acknowledgement videos in all 11 languages.</td></tr>
 </table>
 
 <h2>4. Briefly: Options 1 and 3</h2>
 
-<h3>Option 1 — Generic LLM-augmented assistant</h3>
+<h3>Option 1 - Generic LLM-augmented assistant</h3>
 <p>Too unfocused for a Sarvam CS hire. Doesn't exercise the Indic-language, voice-first, or document-grounded reasoning surface that's actually differentiated about Sarvam. Could be done with any LLM provider and wouldn't reveal product judgment.</p>
 
-<h3>Option 3 — Reviewer / Critic LLM</h3>
+<h3>Option 3 - Reviewer / Critic LLM</h3>
 <p>Architecturally interesting but again doesn't exercise the voice stack. If chosen, the right framing for a Sarvam CS application would be a multi-language critic over Indic-script content (e.g. a reviewer for Bhashini-style translations), which would put Sarvam Translate / Mayura at the centre. But Option 2 is the better fit for this assignment because it lets me demonstrate the full voice stack plus the CS analytics layer.</p>
 
 <!-- ============= PART 2 ============= -->
 <h2>5. Part 2 · Market research thesis</h2>
 
 <h3>5.1 Thesis in one paragraph</h3>
-<p>India has, in 2026, made an explicit strategic bet on sovereign AI — not as protectionism, but as the only way to ensure a billion-plus Indian-language speakers get AI built <i>for</i> them rather than translated <i>to</i> them. The bet is being executed across four levers: subsidised compute (38,000+ GPUs deployed under the IndiaAI Mission at ₹150 / hour for selected startups), funded foundation models (Sarvam selected to build the sovereign LLM, alongside 11 other organisations), a DPI playbook that AI is being grafted onto (Aadhaar / UPI / DigiLocker / ONDC), and an unusually pragmatic policy stance — "regulate harms in deployment, not capability of models." Sarvam is the company positioned closest to the bullseye: Indic-first, voice-first, full-stack, already in production at Tata Capital, with an open-weight Apache 2.0 release of Sarvam-30B and Sarvam-105B in March 2026. The risks are real. The opportunity surface — a US$17 B Indian AI market by 2027 with the deepest concentration of Indic-language enterprise demand — is what makes Sarvam plausibly the most consequential Indian AI company of this cycle.</p>
+<p>India has, in 2026, made an explicit strategic bet on sovereign AI - not as protectionism, but as the only way to ensure a billion-plus Indian-language speakers get AI built <i>for</i> them rather than translated <i>to</i> them. The bet is being executed across four levers: subsidised compute (38,000+ GPUs deployed under the IndiaAI Mission at ₹150 / hour for selected startups), funded foundation models (Sarvam selected to build the sovereign LLM, alongside 11 other organisations), a DPI playbook that AI is being grafted onto (Aadhaar / UPI / DigiLocker / ONDC), and an unusually pragmatic policy stance - "regulate harms in deployment, not capability of models." Sarvam is the company positioned closest to the bullseye: Indic-first, voice-first, full-stack, already in production at Tata Capital, with an open-weight Apache 2.0 release of Sarvam-30B and Sarvam-105B in March 2026. The risks are real. The opportunity surface - a US$17 B Indian AI market by 2027 with the deepest concentration of Indic-language enterprise demand - is what makes Sarvam plausibly the most consequential Indian AI company of this cycle.</p>
 
 <h3>5.2 Strategic imperatives for sovereign AI in India</h3>
-<p><b>5.2.1 Language coverage is the moat global labs won't naturally close.</b> GPT-class models trained on web data underperform materially on Indian languages — particularly low-resource scripts (Bodo, Santali, Maithili, Sindhi, Manipuri, Kashmiri) and on code-mixing patterns that dominate Indian speech (Hinglish, Tanglish, Banglish). India has 22 scheduled languages, 1,600+ dialects. A frontier lab in San Francisco optimising for English benchmarks has no commercial reason to fix this. An Indian lab does. Sarvam's Saaras v3 supports 22 languages; Bulbul v3 ships 11; Akshar reads 23.</p>
+<p><b>5.2.1 Language coverage is the moat global labs won't naturally close.</b> GPT-class models trained on web data underperform materially on Indian languages - particularly low-resource scripts (Bodo, Santali, Maithili, Sindhi, Manipuri, Kashmiri) and on code-mixing patterns that dominate Indian speech (Hinglish, Tanglish, Banglish). India has 22 scheduled languages, 1,600+ dialects. A frontier lab in San Francisco optimising for English benchmarks has no commercial reason to fix this. An Indian lab does. Sarvam's Saaras v3 supports 22 languages; Bulbul v3 ships 11; Akshar reads 23.</p>
 
-<p><b>5.2.2 Data sovereignty is becoming a real procurement criterion.</b> The DPDP Act (in force, 2023) imposes data-residency obligations. Public-sector buyers, BFSI, healthcare, and large enterprises are RFP-mandating "data must not leave Indian jurisdiction." A US-hosted closed model can comply contractually but not architecturally. An India-hosted open-weight model can do both. Sarvam's "Sovereign by design — built and operated entirely in India" pitch on the Arya page is targeting exactly this procurement reality.</p>
+<p><b>5.2.2 Data sovereignty is becoming a real procurement criterion.</b> The DPDP Act (in force, 2023) imposes data-residency obligations. Public-sector buyers, BFSI, healthcare, and large enterprises are RFP-mandating "data must not leave Indian jurisdiction." A US-hosted closed model can comply contractually but not architecturally. An India-hosted open-weight model can do both. Sarvam's "Sovereign by design - built and operated entirely in India" pitch on the Arya page is targeting exactly this procurement reality.</p>
 
 <p><b>5.2.3 Cost-per-call is the gating factor for the 1B+ user opportunity.</b> Frontier-model pricing translates to ~₹50-100 per voice-call-minute. That doesn't work for an Indian collections call placed because someone is ₹2,000 overdue. Sarvam-30B at ₹2.5 / million input tokens is roughly 40-100× cheaper than frontier. Saaras at ₹30 / hour of STT is comparable. This is the unit-economics moat that makes voice-AI viable in BFSI, citizen services, and edtech.</p>
 
 <h3>5.3 Policy landscape</h3>
 
 <h4>IndiaAI Mission</h4>
-<p>Cabinet-approved March 2024 at a five-year outlay of <b>₹10,371.9 crore (~US$1.2 B)</b>. Seven pillars: compute capacity (₹4,563 cr — largest), foundation models (₹1,971 cr), startup financing (₹1,943 cr), AI Innovation Centres, datasets platform, applications, and safe &amp; trusted AI. Run by IndiaAI (an Independent Business Division under Digital India Corporation, MeitY oversight).</p>
+<p>Cabinet-approved March 2024 at a five-year outlay of <b>₹10,371.9 crore (~US$1.2 B)</b>. Seven pillars: compute capacity (₹4,563 cr - largest), foundation models (₹1,971 cr), startup financing (₹1,943 cr), AI Innovation Centres, datasets platform, applications, and safe &amp; trusted AI. Run by IndiaAI (an Independent Business Division under Digital India Corporation, MeitY oversight).</p>
 
-<p><b>Execution reality (April 2026):</b> only ~₹400 cr disbursed in the first two years; ₹1,000 cr earmarked for FY27. 38,000+ GPUs deployed at the subsidised ₹150/hr rate. Sarvam, Gnani, Fractal, BharatGen and 8 others selected for foundation-model grants. The mission is making real moves but at slower pace than the headline outlay suggests — a watch-item for any vendor selling into the public AI ecosystem.</p>
+<p><b>Execution reality (April 2026):</b> only ~₹400 cr disbursed in the first two years; ₹1,000 cr earmarked for FY27. 38,000+ GPUs deployed at the subsidised ₹150/hr rate. Sarvam, Gnani, Fractal, BharatGen and 8 others selected for foundation-model grants. The mission is making real moves but at slower pace than the headline outlay suggests - a watch-item for any vendor selling into the public AI ecosystem.</p>
 
 <h4>DPDP Act</h4>
 <p>In force. Consent, purpose limitation, data-fiduciary obligations. Cross-border transfers permitted but subject to a government negative list. Sensitive personal data (health, financial) effectively requires Indian residency in practice for risk-averse buyers. Samvaad's deployment matrix (Sarvam Cloud / VPC / on-prem / air-gapped) is the DPDP procurement story.</p>
 
 <h4>Adjacent policy</h4>
-<p>Digital India Bhashini (translation-mission corpus). MeitY's March 2024 AI advisory required "untested AI" deployment approval, walked back after industry pushback. Budget 2026 allocated ₹21,632.96 cr to MeitY overall, 17% down from FY26. India has explicitly <i>not</i> followed EU AI Act-style ex-ante regulation — the posture is "regulate harms in deployment, not capability of models," which is on net builder-friendly.</p>
+<p>Digital India Bhashini (translation-mission corpus). MeitY's March 2024 AI advisory required "untested AI" deployment approval, walked back after industry pushback. Budget 2026 allocated ₹21,632.96 cr to MeitY overall, 17% down from FY26. India has explicitly <i>not</i> followed EU AI Act-style ex-ante regulation - the posture is "regulate harms in deployment, not capability of models," which is on net builder-friendly.</p>
 
-<h3>5.4 The Indian AI stack — by layer</h3>
+<h3>5.4 The Indian AI stack - by layer</h3>
 
 <table>
   <tr><th>Layer</th><th>Indian players</th></tr>
@@ -299,25 +299,25 @@
   <tr><td>Foundation models</td><td><b>Sarvam</b> (30B, 105B, Sarvam-M, Saaras, Bulbul, Vision, Translate, Mayura), <b>Krutrim / Ola</b> (22-lang LLM, India's first AI unicorn ~$1B), <b>BharatGen</b> (IIT-B consortium), <b>AI4Bharat / IIT-M</b>, CoRover BharatGPT, Tech-Mahindra Indus, internal Jio / Tata models.</td></tr>
   <tr><td>Speech / multimodal</td><td>Sarvam (most production-mature), Gnani AI, CoRover, Skit.ai (US-pivoted).</td></tr>
   <tr><td>Applications (vertical)</td><td>BFSI: Tata Capital (Samvaad), HDFC Ergo, Bajaj Allianz, ICICI Lombard pilots. Public services: AI Sachiv, state citizen-service voicebots. EdTech, healthcare, contact centres.</td></tr>
-  <tr><td>Tooling / agent platforms</td><td><b>Sarvam Arya</b>. Global tools landing in India (Cohere, Glean). Most large Indian BFSI is still hand-rolling agent platforms — this is Sarvam's biggest enterprise opportunity.</td></tr>
+  <tr><td>Tooling / agent platforms</td><td><b>Sarvam Arya</b>. Global tools landing in India (Cohere, Glean). Most large Indian BFSI is still hand-rolling agent platforms - this is Sarvam's biggest enterprise opportunity.</td></tr>
 </table>
 
 <h3>5.5 Sarvam's positioning</h3>
 
 <h4>What Sarvam is, verified May 2026</h4>
-<p>Founded 2023, Bengaluru. ~US$54 M raised (Lightspeed, Peak XV, Khosla). Selected as the sovereign LLM builder under the IndiaAI Mission. Five products across three layers: <b>foundation models</b> (30B, 105B, Saaras v3, Bulbul v3, Vision, Translate, Mayura) · <b>developer platform</b> (dashboard.sarvam.ai, ₹1,000 free credits) · <b>applications</b> (Samvaad conversational agents, Studio content, Akshar doc digitisation, Arya enterprise agents, Indus). Open-source pivot in March 2026 — Sarvam-30B and Sarvam-105B released Apache 2.0 on Hugging Face and AIKosh. SOC 2 Type II + ISO certified.</p>
+<p>Founded 2023, Bengaluru. ~US$54 M raised (Lightspeed, Peak XV, Khosla). Selected as the sovereign LLM builder under the IndiaAI Mission. Five products across three layers: <b>foundation models</b> (30B, 105B, Saaras v3, Bulbul v3, Vision, Translate, Mayura) · <b>developer platform</b> (dashboard.sarvam.ai, ₹1,000 free credits) · <b>applications</b> (Samvaad conversational agents, Studio content, Akshar doc digitisation, Arya enterprise agents, Indus). Open-source pivot in March 2026 - Sarvam-30B and Sarvam-105B released Apache 2.0 on Hugging Face and AIKosh. SOC 2 Type II + ISO certified.</p>
 
 <h4>Why Sarvam is positioned to win</h4>
-<p><b>Indic-first by design, not by translation.</b> Models trained on Indic corpora and code-mixed data from day one. Bulbul v3's 37-voice library across 11 languages — orders of magnitude more native voice coverage than any global TTS.</p>
+<p><b>Indic-first by design, not by translation.</b> Models trained on Indic corpora and code-mixed data from day one. Bulbul v3's 37-voice library across 11 languages - orders of magnitude more native voice coverage than any global TTS.</p>
 <p><b>Voice-first.</b> ~80% of mass-market Indian users prefer voice over text for non-trivial interactions. Saaras+Bulbul is the only production-grade Indic voice stack at scale in 2026. Samvaad's <b>&lt;500 ms latency</b> and <b>100M+ conversations</b> are a real moat against any competitor that has to build voice from scratch.</p>
 <p><b>Full-stack.</b> Models → APIs → applications → enterprise platform. Most peers are layer-specific. Indian enterprise buyers (BFSI, govt) explicitly want one vendor; full-stack is winning enterprise deals.</p>
 <p><b>Government tailwind.</b> IndiaAI's chosen sovereign-LLM builder. Every public-sector AI RFP that lists "sovereign Indian model" as a requirement is, in effect, a sole-source for Sarvam.</p>
 <p><b>Enterprise-grade from day one.</b> SOC 2 Type II, ISO, DPDP-aligned, VPC + on-prem deployment. Unusual for a 2-year-old AI startup. Reflects who they sell to.</p>
 
 <h4>What Sarvam should worry about</h4>
-<p><b>Foundation-model commoditisation.</b> If global open-weight models close the Indic gap via fine-tuning on Bhashini corpora — and they will, eventually — the model-layer moat compresses. Defense: push moat upward to voice (harder to commoditise) and applications (Samvaad, Arya).</p>
+<p><b>Foundation-model commoditisation.</b> If global open-weight models close the Indic gap via fine-tuning on Bhashini corpora - and they will, eventually - the model-layer moat compresses. Defense: push moat upward to voice (harder to commoditise) and applications (Samvaad, Arya).</p>
 <p><b>Enterprise GTM execution.</b> Indian BFSI sales cycles are slow, relationship-driven. Forward-deployed-engineer model is correct but expensive and people-bound. Scaling FDE while unit economics are still being worked out is the operational tension to watch.</p>
-<p><b>The "I'll just use ChatGPT in Hindi" buyer.</b> A meaningful share of SMBs won't pay for an Indic specialist if frontier-model quality on Indic narrows. Sarvam's answer: unit economics and on-prem availability — neither of which ChatGPT can match.</p>
+<p><b>The "I'll just use ChatGPT in Hindi" buyer.</b> A meaningful share of SMBs won't pay for an Indic specialist if frontier-model quality on Indic narrows. Sarvam's answer: unit economics and on-prem availability - neither of which ChatGPT can match.</p>
 <p><b>Hardware dependency.</b> Like everyone, Sarvam runs on imported GPUs. Geopolitical squeeze would move the cost structure. Strategic, not near-term.</p>
 
 <h3>5.6 Market size and forward look</h3>
@@ -326,24 +326,24 @@
   <div class="card"><div class="num-big">420 K</div><div class="num-label">AI workers in India<br/>+15% CAGR demand</div></div>
   <div class="card"><div class="num-big">US$2.9 B</div><div class="num-label">VC funding across top Indian AI players in 2026</div></div>
 </div>
-<p style="margin-top:14px;">Spend mix (BCG): ~40% BFSI, 25% IT-services internal, 15% retail/e-commerce, 10% public+healthcare, 10% other. Voice + Indic-language workloads are <b>over-indexed in BFSI</b> (collections, sales, claims) and <b>public sector</b> (citizen services) — the two segments where Sarvam is most credible.</p>
+<p style="margin-top:14px;">Spend mix (BCG): ~40% BFSI, 25% IT-services internal, 15% retail/e-commerce, 10% public+healthcare, 10% other. Voice + Indic-language workloads are <b>over-indexed in BFSI</b> (collections, sales, claims) and <b>public sector</b> (citizen services) - the two segments where Sarvam is most credible.</p>
 
 <h4>Forward-looking imperatives for Sarvam (my view)</h4>
 <ol>
-  <li><b>Productise Samvaad self-serve for mid-market.</b> Today's contact-sales model captures enterprise but leaves mid-market (regional NBFCs, mid-insurers, edtech) on the table. A 14-day Samvaad self-serve tier would dramatically expand the funnel — and is what would have let me build Aarav <i>inside</i> Samvaad for this assignment.</li>
+  <li><b>Productise Samvaad self-serve for mid-market.</b> Today's contact-sales model captures enterprise but leaves mid-market (regional NBFCs, mid-insurers, edtech) on the table. A 14-day Samvaad self-serve tier would dramatically expand the funnel - and is what would have let me build Aarav <i>inside</i> Samvaad for this assignment.</li>
   <li><b>Telephony abstraction.</b> Most buyers want a "Sarvam phone number" experience without integrating Twilio/Exotel. Sarvam-managed SIP would close more deals.</li>
-  <li><b>Stronger Sarvam-LLM-in-LiveKit story.</b> The official cookbook still uses OpenAI gpt-4o as the LLM in the LiveKit example. Replacing it with Sarvam-30B as the default is a high-leverage GTM move — every developer reading the docs ends up using a Sarvam LLM by default.</li>
+  <li><b>Stronger Sarvam-LLM-in-LiveKit story.</b> The official cookbook still uses OpenAI gpt-4o as the LLM in the LiveKit example. Replacing it with Sarvam-30B as the default is a high-leverage GTM move - every developer reading the docs ends up using a Sarvam LLM by default.</li>
   <li><b>Vertical depth in BFSI.</b> "Samvaad for Collections" pre-packaged template with pre-built RAG over standard policy docs, escalation flows, and compliance guardrails would shorten the typical 4-6-week pilot to &lt;2 weeks.</li>
-  <li><b>Indic embeddings.</b> A native <code>sarvam-embed</code> model would let Indian developers build Indic RAG without falling back to OpenAI / Cohere embeddings — closing the last layer where they reach for a US vendor.</li>
+  <li><b>Indic embeddings.</b> A native <code>sarvam-embed</code> model would let Indian developers build Indic RAG without falling back to OpenAI / Cohere embeddings - closing the last layer where they reach for a US vendor.</li>
 </ol>
 
-<h3>5.7 So what — for a Sarvam CS hire</h3>
+<h3>5.7 So what - for a Sarvam CS hire</h3>
 <p>Customer Success at Sarvam in 2026 isn't onboarding-and-retention. It is:</p>
 <ul>
-  <li><b>Translating buyer outcomes into Sarvam's product surface</b> — "you want a Hindi-Hinglish collections bot at &lt;₹3 / call → that's Samvaad on Sarvam Cloud, here's the latency budget, here's the compliance guardrail config."</li>
-  <li><b>Being the early-warning system on what's missing</b> — most enterprise customers in India are Sarvam's first deployment of a particular workflow. CS catches gaps before they become churn.</li>
-  <li><b>Owning "explain Sarvam's stack to the buyer's risk team"</b> — DPDP, SOC2, deployment modes, model-update SLAs. Heavy on artefacts.</li>
-  <li><b>Carrying expansion</b> — every deployed Samvaad customer is a candidate for Studio or Arya. CS is the natural seller.</li>
+  <li><b>Translating buyer outcomes into Sarvam's product surface</b> - "you want a Hindi-Hinglish collections bot at &lt;₹3 / call → that's Samvaad on Sarvam Cloud, here's the latency budget, here's the compliance guardrail config."</li>
+  <li><b>Being the early-warning system on what's missing</b> - most enterprise customers in India are Sarvam's first deployment of a particular workflow. CS catches gaps before they become churn.</li>
+  <li><b>Owning "explain Sarvam's stack to the buyer's risk team"</b> - DPDP, SOC2, deployment modes, model-update SLAs. Heavy on artefacts.</li>
+  <li><b>Carrying expansion</b> - every deployed Samvaad customer is a candidate for Studio or Arya. CS is the natural seller.</li>
 </ul>
 <p>The CS role is positioned at the highest-leverage point in Sarvam's GTM right now, because the product is mature enough to deploy but the playbook for <i>who buys what when</i> is still being written. That's what I'm applying for.</p>
 
@@ -359,8 +359,8 @@
 │   ├── SARVAM_PLATFORM_ROUTE.md       Verified surface (Samvaad / dashboard / dev stack)
 │   ├── SARVAM_DASHBOARD_PLAYBOOK.md   15-min dashboard tour for Yash
 │   ├── EXECUTION_PLAN.md              3-day timeline + route decision + risks
-│   ├── VOICEBOT_PRODUCT_SPEC.md       Aarav spec — flow, latency, guardrails, metrics
-│   ├── VOICEBOT_PROMPT.md             System prompt + sample exchanges
+│   ├── VOICEBOT_PRODUCT_SPEC.md       Aarav spec - flow, latency, guardrails, metrics
+│   ├── VOICEBOT_PRODUCT_SPEC.md          Full product spec and guardrail design
 │   ├── VOICE_AGENT_ARCHITECTURE.md    Block diagram + production migration
 │   ├── PART2_MARKET_THESIS.md         Source markdown for Part 2
 │   ├── ANAND_EMAIL.md                 Draft email (do not send w/o approval)
@@ -379,7 +379,7 @@
 │       └── voice_design.py
 ├── agents/
 │   └── livekit_agent.py               Production-pattern variant
-└── data/sample_insurance_policy.txt   ShieldCare brochure (RAG corpus)</pre>
+└── data/sample_insurance_policy.txt   Star Health brochure (RAG corpus)</pre>
 
 <h3>6.2 Setup</h3>
 <pre>cp .env.example .env  # add SARVAM_API_KEY=sk_...
