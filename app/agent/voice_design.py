@@ -16,11 +16,11 @@ class VoiceProfile:
     target_language_code: str
 
 
-# Curated picks (not exhaustive — Bulbul v3 ships 23 male + 14 female voices)
+# Curated picks (not exhaustive - Bulbul v3 ships 23 male + 14 female voices)
 PROFILES: dict[str, VoiceProfile] = {
     # hi-IN target: Bulbul reads romanised Hinglish words ("main", "hain", "kya") as Hindi,
     # giving correct pronunciation. en-IN target for English-only turns.
-    # LLM output is always Latin/Roman script (no Devanagari) — enforced in system prompt.
+    # LLM output is always Latin/Roman script (no Devanagari) - enforced in system prompt.
     "en-IN-male": VoiceProfile(voice="shubh", pace=1.0, label="Aarav (male)", target_language_code="en-IN"),
     "en-IN-female": VoiceProfile(voice="priya", pace=1.0, label="Aarti (female)", target_language_code="en-IN"),
     "hi-IN-male": VoiceProfile(voice="shubh", pace=1.0, label="Aarav (male)", target_language_code="hi-IN"),
