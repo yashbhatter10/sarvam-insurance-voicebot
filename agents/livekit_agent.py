@@ -1,5 +1,5 @@
 """
-Production-pattern voice agent — LiveKit + Sarvam plugin variant.
+Production-pattern voice agent - LiveKit + Sarvam plugin variant.
 
 This is NOT what the demo runs. The demo uses the FastAPI scaffold in `app/`.
 This file is included as the production-migration exhibit: the same Aarav
@@ -55,7 +55,7 @@ class AaravAgent(Agent):
         super().__init__(
             instructions=AARAV_INSTRUCTIONS,
 
-            # Sarvam Saaras v3 — auto-detect language, code-mix friendly.
+            # Sarvam Saaras v3 - auto-detect language, code-mix friendly.
             # flush_signal=True per Sarvam's best practice for turn-taking.
             stt=sarvam.STT(
                 language="unknown",
@@ -68,7 +68,7 @@ class AaravAgent(Agent):
             # Swap to a Sarvam LLM when the LiveKit plugin supports it natively.
             llm=openai.LLM(model="gpt-4o"),
 
-            # Sarvam Bulbul v3 — warm male voice for English/Hinglish.
+            # Sarvam Bulbul v3 - warm male voice for English/Hinglish.
             tts=sarvam.TTS(
                 target_language_code="en-IN",
                 model="bulbul:v3",
