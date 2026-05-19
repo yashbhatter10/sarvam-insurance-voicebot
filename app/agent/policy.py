@@ -1,7 +1,7 @@
 """
 System prompt + compliance guardrails for Aarav (Star Health insurance voicebot).
 
-Guardrails are *post-filters* on the LLM reply. They catch cases where the
+Guardrails are post-filters on the LLM reply. They catch cases where the
 model slips on the bright-line rules (premium quotes, claim promises, sensitive
 data requests, tax/medical/legal/investment advice, competitor comparisons,
 prompt-leak attempts, brochure-violating rider offers) and rewrite the reply
@@ -233,7 +233,7 @@ Brochure snippets relevant to this turn:
 
 
 # ---------------------------------------------------------------------------
-# Guardrails — post-filters on the LLM reply
+# Guardrails - post-filters on the LLM reply
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -242,7 +242,7 @@ class GuardrailResult:
     triggered: list[str]
 
 
-# Definite premium quotes — "premium is exactly X" patterns
+# Definite premium quotes - "premium is exactly X" patterns
 _DEFINITE_PREMIUM_PATTERN = re.compile(
     r"\b(?:premium|cost|price)\s+(?:is|will be|comes to|equals|of)\s+(?:exactly\s+)?(?:rs\.?|inr|₹)?\s?\d{2,}",
     re.IGNORECASE,
@@ -283,7 +283,7 @@ _SENSITIVE_DATA_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Promises of WhatsApp / personal email outreach (looser — any sentence
+# Promises of WhatsApp / personal email outreach (looser - any sentence
 # combining "send/message/email" + "whatsapp/gmail/personal email")
 _UNOFFICIAL_CHANNEL_PATTERN = re.compile(
     r"(?:\bi(?:'?ll| will| can| could)\b|\bwill\b|\bsend(?:ing)?\b|\bmessag\w+\b|\bping\b|\bdm\b)"
@@ -305,13 +305,13 @@ _AI_DISCLOSURE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Smart Cover offered to <10L income — covers both digit (4 lakh) and word (four lakh) forms
+# Smart Cover offered to <10L income - covers both digit (4 lakh) and word (four lakh) forms
 _SMART_COVER_LOW_INCOME_PATTERN = re.compile(
     r"\bsmart\s+cover\b.*\b(?:three|four|five|six|seven|eight|nine|3|4|5|6|7|8|9)\s+lakh\b",
     re.IGNORECASE,
 )
 
-# Banned hindi word — Devanagari, \b doesn't work on non-ASCII, use lookarounds
+# Banned hindi word - Devanagari, \b doesn't work on non-ASCII, use lookarounds
 _BANNED_HINDI = re.compile(r"अरे")
 
 # Markdown patterns that must never reach TTS
@@ -322,7 +322,7 @@ _MARKDOWN_BACKTICK     = re.compile(r"`+(.+?)`+")              # `code`
 
 
 def _strip_markdown(text: str) -> str:
-    """Remove all markdown formatting so TTS never reads asterisks, hashes, etc."""
+    """Strip all markdown formatting - TTS reads asterisks and hashes literally."""
     text = _MARKDOWN_BOLD_ITALIC.sub(r"\1", text)
     text = _MARKDOWN_UNDERSCORE.sub(r"\1", text)
     text = _MARKDOWN_HEADING.sub("", text)
@@ -332,7 +332,7 @@ def _strip_markdown(text: str) -> str:
     return text.strip()
 
 
-# Abbreviation expander — catches common insurance shortforms the LLM might slip in
+# Abbreviation expander - catches common insurance shortforms the LLM might slip in
 _ABBREV_MAP = {
     r"\bPED\b":  "Pre-Existing Disease",
     r"\bTPA\b":  "Third Party Administrator",
@@ -355,7 +355,7 @@ def _expand_abbreviations(text: str) -> tuple[str, bool]:
     return text, changed
 
 
-# Stalling fillers — bot announcing it will share something without sharing it.
+# Stalling fillers - bot announcing it will share something without sharing it.
 # These get stripped; if the remaining reply is empty after stripping, it means
 # the entire turn was a stall and we replace it with a no-op redirect.
 _STALLING_FILLER_PATTERN = re.compile(
@@ -372,11 +372,11 @@ _PERMISSION_ASK_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Roman Hindi → Devanagari lookup table.
-# Order matters — longer / more specific phrases must come first.
+# Roman Hindi to Devanagari lookup table.
+# Order matters - longer / more specific phrases must come first.
 # Only includes words that are unambiguously Hindi (safe to convert without context).
 _ROMAN_TO_DEVANAGARI = [
-    # ── Multi-word phrases first (most specific) ──────────────────────────────
+    # Multi-word phrases first (most specific)
     (re.compile(r'\bhaan haan\b',               re.IGNORECASE), 'हाँ हाँ'),
     (re.compile(r'\bkoi baat nahi[n]?\b',       re.IGNORECASE), 'कोई बात नहीं'),
     (re.compile(r'\bsamajh gaya\b',             re.IGNORECASE), 'समझ गया'),
@@ -391,7 +391,7 @@ _ROMAN_TO_DEVANAGARI = [
     (re.compile(r'\baapka naam\b',              re.IGNORECASE), 'आपका नाम'),
     (re.compile(r'\baapki city\b',              re.IGNORECASE), 'आपकी city'),
     (re.compile(r'\baapka number\b',            re.IGNORECASE), 'आपका number'),
-    # ── Single words ──────────────────────────────────────────────────────────
+    # Single words
     (re.compile(r'\btheek\b',                   re.IGNORECASE), 'ठीक'),
     (re.compile(r'\bachha\b',                   re.IGNORECASE), 'अच्छा'),
     (re.compile(r'\bachhi\b',                   re.IGNORECASE), 'अच्छी'),
@@ -466,7 +466,7 @@ _ROMAN_TO_DEVANAGARI = [
 def _romanized_hindi_to_devanagari(text: str) -> tuple[str, bool]:
     """Convert Roman-script Hindi words to Devanagari. Returns (converted_text, was_changed).
 
-    Only converts words that are unambiguously Hindi — avoids false-positives on
+    Only converts words that are unambiguously Hindi - avoids false-positives on
     English words. Runs as a post-filter so TTS always gets proper Devanagari.
     """
     changed = False
@@ -487,7 +487,7 @@ def _romanized_hindi_to_devanagari(text: str) -> tuple[str, bool]:
 # Non-Devanagari Indian language scripts that Bulbul v3 TTS cannot pronounce.
 # Devanagari (U+0900–U+097F) and ASCII/Latin are the ONLY supported ranges.
 #
-# Pattern built programmatically from integer code points — never from
+# Pattern built programmatically from integer code points - never from
 # copy-pasted Unicode literals, which can silently land on the wrong code
 # point and wipe Devanagari from every bot response.
 _UNSUPPORTED_SCRIPT_RANGES = [
@@ -500,7 +500,7 @@ _UNSUPPORTED_SCRIPT_RANGES = [
     (0x0C80, 0x0CFF),  # Kannada
     (0x0D00, 0x0D7F),  # Malayalam
     (0x0D80, 0x0DFF),  # Sinhala
-    # Devanagari U+0900–U+097F intentionally excluded — Bulbul handles it.
+    # Devanagari U+0900-U+097F intentionally excluded - Bulbul handles it.
 ]
 _UNSUPPORTED_SCRIPT_RE = re.compile(
     "[" + "".join(chr(lo) + "-" + chr(hi) for lo, hi in _UNSUPPORTED_SCRIPT_RANGES) + "]+"
@@ -542,7 +542,7 @@ _DISCOUNT_PROMISE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Hallucinated product names — bot must only say "Star Health Comprehensive Insurance Policy"
+# Hallucinated product names - bot must only say "Star Health Comprehensive Insurance Policy"
 # or generic terms like "health plan" / "family floater". Catch invented plan names.
 _HALLUCINATED_PRODUCT_PATTERN = re.compile(
     r"\b(?:star\s+care|star\s+shield|star\s+plus|shieldcare\s+plan|star\s+family\s+care|"
@@ -550,7 +550,7 @@ _HALLUCINATED_PRODUCT_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Hindi/Hinglish form of "I'll tell you the exact premium" — violates guardrail
+# Hindi/Hinglish form of "I'll tell you the exact premium" - violates guardrail
 _HINDI_EXACT_PREMIUM_PROMISE = re.compile(
     r"(?:exact|actual)\s+(?:premium|figure|number|quote)\s+(?:bata|bataunga|batadunga|de\s+sakta|dunga)",
     re.IGNORECASE,
@@ -607,7 +607,7 @@ _REFUSAL_UNOFFICIAL_CHANNEL = (
 )
 
 _REFUSAL_COMPETITOR = (
-    "I can only speak to ShieldCare's side. For a proper side-by-side comparison "
+    "I can only speak to Star Health's side. For a proper side-by-side comparison "
     "our advisor can walk you through it on the call."
 )
 
@@ -662,30 +662,30 @@ _REFUSAL_PED_IMMEDIATE = (
 def apply_guardrails(reply: str) -> GuardrailResult:
     """Inspect and rewrite the LLM reply if it crosses any insurance bright line.
 
-    Order matters — most specific first. A reply that triggers multiple guardrails
+    Order matters - most specific first. A reply that triggers multiple guardrails
     gets rewritten to the first one matched.
 
-    Markdown is stripped unconditionally first — the LLM occasionally ignores the
+    Markdown is stripped unconditionally first - the LLM occasionally ignores the
     "no markdown" instruction, and **bold** spoken aloud by TTS sounds like noise.
     """
     triggered: list[str] = []
-    # Always strip markdown before anything else — TTS will read asterisks literally
+    # Always strip markdown before anything else - TTS will read asterisks literally
     text = _strip_markdown(reply)
     if text != reply:
         triggered.append("markdown_stripped")
 
-    # Strip non-Devanagari Indian scripts (Tamil, Punjabi, Bengali etc.) — Bulbul TTS
+    # Strip non-Devanagari Indian scripts (Tamil, Punjabi, Bengali etc.) - Bulbul TTS
     # cannot pronounce them; the LLM sometimes echoes back what the customer said
     text, scripts_stripped = _strip_unsupported_scripts(text)
     if scripts_stripped:
         triggered.append("unsupported_script_stripped")
 
-    # Convert Roman Hindi → Devanagari — TTS mispronounces Roman-script Hindi words
+    # Convert Roman Hindi to Devanagari - TTS mispronounces Roman-script Hindi words
     text, hindi_fixed = _romanized_hindi_to_devanagari(text)
     if hindi_fixed:
         triggered.append("roman_hindi_converted")
 
-    # Expand insurance abbreviations — LLM occasionally ignores the full-forms rule
+    # Expand insurance abbreviations - LLM occasionally ignores the full-forms rule
     text, abbrevs_expanded = _expand_abbreviations(text)
     if abbrevs_expanded:
         triggered.append("abbreviations_expanded")
@@ -696,7 +696,7 @@ def apply_guardrails(reply: str) -> GuardrailResult:
         triggered.append("stalling_filler_removed")
         cleaned = _STALLING_FILLER_PATTERN.sub("", text).strip()
         if not cleaned or len(cleaned.split()) < 4:
-            # Remaining text is a fragment (e.g., "आपके saath.") — substitute a real question
+            # Remaining text is a fragment (e.g., "आपके saath.") - substitute a real question
             text = "क्या आपके घर में किसी को कोई regular medication चल रही है?"
         else:
             text = cleaned
@@ -793,14 +793,13 @@ def build_messages(
 ) -> list[dict]:
     """Assemble the chat-completion message list.
 
-    Note on dynamic variables (called out explicitly in the submission):
-    A production deployment would inject `customer_name`, `age`, `gender`,
-    `marital_status`, `city`, `income_range`, `dropped_plan_value`, `occupation`,
-    `education`, `smoker_status` into the system prompt via additional `.format()`
-    keys. For this candidate assignment those variables are hardcoded into the
-    discovery flow (the bot asks them in the conversation) rather than injected
-    from a CRM. The injection point is `system_prompt.format(...)` below — adding
-    new keys is a one-line change.
+    Note on dynamic variables: in production you'd inject `customer_name`, `age`,
+    `gender`, `marital_status`, `city`, `income_range`, `dropped_plan_value`,
+    `occupation`, `education`, `smoker_status` into the system prompt via additional
+    `.format()` keys. For this assignment those variables are hardcoded into the
+    discovery flow (the bot asks them in-conversation) rather than pulled from a CRM.
+    The injection point is `system_prompt.format(...)` below - adding new keys is a
+    one-line change.
     """
     system = system_prompt.format(
         detected_language=detected_language,
